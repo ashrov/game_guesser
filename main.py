@@ -7,8 +7,9 @@ from aiogram.types import Message
 import logging
 
 import config
+import guesser
 import strings
-
+from utils import UserStates
 
 logging.basicConfig(level=logging.INFO)
 
@@ -20,6 +21,26 @@ dp.middleware.setup(LoggingMiddleware())
 @dp.message_handler(commands=("start_game", ))
 async def start_game(message: Message):
     state = dp.current_state(user=message.from_user.id)
+    match await state.get_state():
+        case UserStates.GUESSING:
+            await state.reset_data()
+
+        case None:
+            await state.set_state(UserStates.GUESSING)
+
+    first_tag = guesser.get_tag(tuple())
+    await state.set_data(data={"tags": [first_tag]})
+    await message.reply(guesser.get_question(first_tag))
+
+
+@dp.message_handler(commands=("tags", ))
+async def send_tags(message: Message):
+    print("tag")
+    state = dp.current_state(user=message.from_user.id)
+    tags = await state.get_data()
+    st = await state.get_state()
+    mes = f"{st}; {tags}"
+    await message.reply(mes)
 
 
 @dp.message_handler(commands=("start", ))
@@ -44,4 +65,4 @@ async def shutdown(dispatcher: Dispatcher):
 
 
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    executor.start_polling(dp, skip_updates=False)
