@@ -1,8 +1,8 @@
-from database import DataBase
-
-
-db = DataBase()
-db.connect()
+# from database import DataBase
+#
+#
+# db = DataBase()
+# db.connect()
 
 
 def get_question(tag: str) -> str:
@@ -13,9 +13,9 @@ def get_tag(current_tags: tuple | list) -> str:
     return "...tag..."
 
 
-def close():
-    db.disconnect()
-
-
-get_question([])
-close()
+# def close():
+#     db.disconnect()
+#
+#
+# get_question([])
+# close()
