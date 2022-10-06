@@ -44,6 +44,7 @@ async def send_question(chat_id):
     cur_tag = guesser.get_tag(data.get("tags", ""))
     question = guesser.get_question(cur_tag)
     await state.update_data(current_tag=cur_tag)
+
     answers = {"Да": "question_answer_yes", "Нет": "question_answer_no"}
     await bot.send_message(chat_id, question, reply_markup=get_inline_markup(answers))
 
@@ -73,8 +74,10 @@ async def question_callback_handler(cb: CallbackQuery):
     await send_question(cb.from_user.id)
 
 
-@dp.message_handler(commands=["tags"], state=UserStates.all())
+@dp.message_handler(commands=["tags"], state=UserStates.all() + ["*"])
 async def send_tags(message: Message):
+    """ !!!Отладочная функция!!!
+        Выводит текущее состояние пользователя """
     state = dp.current_state(user=message.from_user.id)
     data = await state.get_data()
     st = await state.get_state()
