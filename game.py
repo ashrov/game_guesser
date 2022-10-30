@@ -16,7 +16,7 @@ class Game:
         self._tags = tags
 
     def __eq__(self, other) -> bool:
-        if all(self._tags) == all(self.tags):
+        if all(self._tags) == all(other.tags):
             return True
         else:
             return False
