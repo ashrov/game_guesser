@@ -1,21 +1,21 @@
-# from database import DataBase
-#
-#
-# db = DataBase()
-# db.connect()
+from database import DataBase
+from utils import Game, Tag
 
 
-def get_question(tag: str) -> str:
-    return "...question..."
+db = DataBase()
+all_tags = db.get_tags()
 
 
-def get_tag(current_tags: tuple | list) -> str:
-    return "...tag..."
+def search_games(tmp_game: Game) -> list[Game]:
+    pass
 
 
-# def close():
-#     db.disconnect()
-#
-#
-# get_question([])
-# close()
+def get_tag(tmp_game: Game) -> Tag:
+    return Tag("", "")
+
+
+def close():
+    db.disconnect()
+
+
+close()
