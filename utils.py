@@ -36,7 +36,8 @@ class Tag:
 
 
 class Game:
-    def __init__(self, name="", tags=[], bad_tags=[]):
+    def __init__(self, name="", game_id=-1, tags=[], bad_tags=[]):
+        self._id = game_id
         self._name = name
         self.tags = tags
         self.bad_tags = bad_tags

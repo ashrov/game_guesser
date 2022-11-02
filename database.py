@@ -1,24 +1,32 @@
-import sqlite3
-from sqlite3 import Connection, Cursor
+from sqlite3 import Connection, Cursor, connect
 
 from utils import Game, Tag
 import config
 
 
+DB_TABLES = {
+    "games": ("id INTEGER PRIMARY KEY",
+              "game_name TEXT",
+              "steam_url TEXT"),
+    "tags": ("id INTEGER PRIMARY KEY",
+             "tag_name TEXT",
+             "question TEXT",
+             "usage_count INTEGER DEFAULT 0"),
+    "links": ("game_id INT",
+              "tag_id INT")
+}
+
+
 class DataBase:
-    _db: Connection
+    _connection: Connection
     _cursor: Cursor
-    _connected: bool
 
     def __init__(self):
         self.connect()
-        if not self._connected:
-            raise ConnectionError
-
         self._create_tables()
 
     def _create_tables(self):
-        for table_name, columns in config.DB_TABLES.items():
+        for table_name, columns in DB_TABLES.items():
             columns_sql = ""
             for column in columns:
                 columns_sql += f"{column}{', ' if column != columns[-1] else ''}"
@@ -28,27 +36,28 @@ class DataBase:
 
     def connect(self):
         try:
-            self._db = sqlite3.connect(config.DATABASE_NAME)
-        except ConnectionError:
-            print(f"unable to connect to {config.DATABASE_NAME}")
-            self._connected = False
+            self._connection = connect(config.DATABASE_NAME)
+        except ConnectionError as er:
+            print(f"unable to connect to {config.DATABASE_NAME}. {er}")
         else:
             print(f"{config.DATABASE_NAME} connected")
-            self._connected = True
-            self._cursor = self._db.cursor()
+            self._connection.isolation_level = None
+            self._cursor = self._connection.cursor()
 
     def disconnect(self):
         self._cursor.close()
-        self._db.close()
-        self._connected = False
+        self._connection.close()
         print(f"{config.DATABASE_NAME} disconnected")
 
     def add_game(self, game: Game):
-        sql = "INSERT INTO games (game_name, tags) VALUES (?, ?)"
-        self._cursor.execute(sql, (game.name, game.tags))
-        self._db.commit()
+        sql = "INSERT INTO games (game_name) VALUES (?)"
+        self._cursor.execute(sql, (game.name, ))
 
-    def get_tags(self) -> list[Tag]:
+    def add_tag_to_game(self, game: Game, tag: Tag):
+        sql = "INSERT INTO links VALUES (?, ?)"
+        self._cursor.execute(sql, (game, tag))
+
+    def get_all_tags(self) -> list[Tag]:
         sql = "SELECT * from tags"
         self._cursor.execute(sql)
         tags = [Tag(*line) for line in self._cursor.fetchall()]
@@ -57,10 +66,8 @@ class DataBase:
     def add_tag(self, tag: Tag):
         sql = f"INSERT INTO tags (tag_name, question) VALUES (?, ?)"
         self._cursor.execute(sql, (tag.name, tag.question))
-        self._db.commit()
 
     def increment_usage(self, tag: Tag):
         sql = f"UPDATE tags SET usage_count = usage_count + 1 WHERE tag_name = '{tag.name}'"
         self._cursor.execute(sql)
-        self._db.commit()
 
