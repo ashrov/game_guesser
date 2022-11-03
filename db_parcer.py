@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 
 
-def get_urls(soup):
+def get_urls(soup) -> list:
     urls = soup.findAll('a', class_='search_result_row')
     urlsRes = []
     for data in urls:
