@@ -93,4 +93,3 @@ class DataBase:
     def increment_usage(self, tag: Tag):
         sql = f"UPDATE tags SET usage_count = usage_count + 1 WHERE tag_name = '{tag.name}'"
         self._cursor.execute(sql)
-

@@ -28,12 +28,12 @@ def get_popularity(soup) -> int:
 
 def get_tags(soup) -> list:
 
-    allTags = soup.findAll('a', class_='app_tag')
-    filteredTags = []
-    for data in allTags:
-        filteredTags.append(data.text.split())
+    all_tags = soup.findAll('a', class_='app_tag')
+    filtered_tags = []
+    for data in all_tags:
+        filtered_tags.append(data.text.strip())
 
-    return filteredTags
+    return filtered_tags
 
 
 main_url = 'https://store.steampowered.com/search/'
@@ -45,8 +45,8 @@ urls = get_urls(main_soup)
 for url in urls:
     page = requests.get(url)
     soup = BeautifulSoup(page.text, "html.parser")
-    tag = get_tags(soup)
+    tags = get_tags(soup)
     popularity = get_popularity(soup)
-    print(*tag, '\n', popularity)
+    print("Тэги:\n", *tags, 'Популярность: \n', popularity)
 
     time.sleep(10)
