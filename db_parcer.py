@@ -3,7 +3,9 @@ from bs4 import BeautifulSoup
 import requests
 
 
+
 def get_urls(soup) -> list:
+
     urls = soup.findAll('a', class_='search_result_row')
     urlsRes = []
     for data in urls:
@@ -36,6 +38,15 @@ def get_tags(soup) -> list:
     return filtered_tags
 
 
+def get_game_name(soup) -> str:
+
+    all_names = soup.findAll('div', class_="apphub_AppName")
+    filtered_names = []
+    for name in all_names:
+        filtered_names.append(name.text)
+
+    return filtered_names[0]
+
 main_url = 'https://store.steampowered.com/search/'
 main_page = requests.get(main_url)
 main_soup = BeautifulSoup(main_page.text, "html.parser")
@@ -47,6 +58,8 @@ for url in urls:
     soup = BeautifulSoup(page.text, "html.parser")
     tags = get_tags(soup)
     popularity = get_popularity(soup)
-    print("Тэги:\n", *tags, '\nПопулярность: \n', popularity)
+    name = get_game_name(soup)
+    print("Тэги:\n", *tags, '\nПопулярность:\n', popularity, '\nИмя:', name)
 
     time.sleep(45)
+
