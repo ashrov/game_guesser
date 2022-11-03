@@ -3,7 +3,7 @@ from sqlite3 import Connection, Cursor, connect
 from utils import Game, Tag, TagsList
 import config
 
-
+`
 DB_TABLES = {
     "games": ("id INTEGER PRIMARY KEY",
               "game_name TEXT",

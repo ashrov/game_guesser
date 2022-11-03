@@ -47,6 +47,6 @@ for url in urls:
     soup = BeautifulSoup(page.text, "html.parser")
     tags = get_tags(soup)
     popularity = get_popularity(soup)
-    print("Тэги:\n", *tags, 'Популярность: \n', popularity)
+    print("Тэги:\n", *tags, '\nПопулярность: \n', popularity)
 
-    time.sleep(10)
+    time.sleep(45)
