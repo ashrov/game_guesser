@@ -1,24 +1,16 @@
+from typing import Iterable
+
+
 class Tag:
-    def __init__(self, *args):
-        """ :param: takes (name, question) or (id, name, question, usage_count) """
+    def __init__(self, name="", question="", tag_id=-1, usage_count=0):
+        self.id= tag_id
+        self._name = name
+        self._question = question
+        self.usage_count = usage_count
 
-        match args:
-            case name, question:
-                self._tag_id = -1
-                self._name = name
-                self._question = question
-                self.usage_count = -1
-            case tag_id, name, question, usage_count:
-                self._tag_id = tag_id
-                self._name = name
-                self._question = question
-                self.usage_count = usage_count
-            case _:
-                raise ValueError
-
-    @property
-    def tag_id(self):
-        return self._tag_id
+    def from_db_row(self, row: Iterable):
+        self.id, self._name, self._question, self.usage_count = row
+        return self
 
     @property
     def name(self) -> str:
@@ -35,16 +27,46 @@ class Tag:
         return f"Tag: {self._name}; Question: {self._question}"
 
 
+class TagsList:
+    def __init__(self, tags_list: Iterable[Tag]):
+        self._list = list(tags_list)
+        self._names_array = [tag.name for tag in self._list]
+
+    @property
+    def names_list(self):
+        return self._names_array
+
+    def __iter__(self):
+        self.i = 0
+
+    def __next__(self):
+        if self.i < len(self._list):
+            tag = self._list[self.i]
+            self.i += 1
+            return tag
+        else:
+            raise StopIteration
+
+    def append(self, new_tag: Tag):
+        self._list.append(new_tag)
+        self._names_array.append(new_tag.name)
+
+
 class Game:
-    def __init__(self, name="", game_id=-1, tags=[], bad_tags=[]):
-        self._id = game_id
+    def __init__(self, name="", game_id=-1, tags=None, steam_url=""):
+        self.id = game_id
         self._name = name
         self.tags = tags
-        self.bad_tags = bad_tags
+        self.steam_url = steam_url
 
     @property
     def name(self):
         return self._name
+
+    def from_db_row(self, row: Iterable, tags: Iterable[Tag]):
+        self.id, self._name, self.steam_url = row
+        self.tags = tags
+        return self
 
     def __eq__(self, other) -> bool:
         return True if all(self.tags) == all(other.tags) else False
