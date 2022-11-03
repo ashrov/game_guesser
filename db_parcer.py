@@ -9,7 +9,7 @@ def get_urls(soup):
     for data in urls:
         urlsRes.append(data['href'])
 
-    print(urlsRes)
+    return urlsRes
 
 
 def get_popularity(soup) -> int:
@@ -35,19 +35,18 @@ def get_tags(soup) -> list:
 
     return filteredTags
 
-# file = open('games.txt', encoding="utf8")
-# game_ids = []
-# for string in file:
-#     print(string[0])
-#
-
-game_id = 730
-url = f'https://store.steampowered.com/app/{game_id}/'
-page = requests.get(url)
-soup = BeautifulSoup(page.text, "html.parser")
 
 main_url = 'https://store.steampowered.com/search/'
 main_page = requests.get(main_url)
 main_soup = BeautifulSoup(main_page.text, "html.parser")
+urls = get_urls(main_soup)
 
-get_urls(main_soup)
+
+for url in urls:
+    page = requests.get(url)
+    soup = BeautifulSoup(page.text, "html.parser")
+    tag = get_tags(soup)
+    popularity = get_popularity(soup)
+    print(*tag, '\n', popularity)
+
+    time.sleep(10)
