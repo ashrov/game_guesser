@@ -7,7 +7,8 @@ import config
 DB_TABLES = {
     "games": ("id INTEGER PRIMARY KEY",
               "game_name TEXT",
-              "steam_url TEXT"),
+              "steam_url TEXT",
+              "popularity INT"),
     "tags": ("id INTEGER PRIMARY KEY",
              "tag_name TEXT",
              "question TEXT",
@@ -49,8 +50,8 @@ class DataBase:
         print(f"{config.DATABASE_NAME} disconnected")
 
     def add_game(self, game: Game):
-        sql = "INSERT INTO games (game_name, steam_url) VALUES (?, ?)"
-        self._cursor.execute(sql, (game.name, game.steam_url))
+        sql = "INSERT INTO games (game_name, steam_url, popularity) VALUES (?, ?, ?)"
+        self._cursor.execute(sql, (game.name, game.steam_url, game.popularity))
         for tag in game.tags:
             self.add_tag_to_game(game, tag)
 
@@ -91,6 +92,6 @@ class DataBase:
         self._tags_list.append(tag)
 
     def increment_usage(self, tag: Tag):
-        sql = f"UPDATE tags SET usage_count = usage_count + 1 WHERE tag_name = '{tag.name}'"
-        self._cursor.execute(sql)
+        sql = f"UPDATE tags SET usage_count = usage_count + 1 WHERE tag_name = ?"
+        self._cursor.execute(sql, (tag.name, ))
 

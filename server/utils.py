@@ -3,7 +3,7 @@ from typing import Iterable
 
 class Tag:
     def __init__(self, name="", question="", tag_id=-1, usage_count=0):
-        self.id= tag_id
+        self.id = tag_id
         self._name = name
         self._question = question
         self.usage_count = usage_count
@@ -53,18 +53,19 @@ class TagsList:
 
 
 class Game:
-    def __init__(self, name="", game_id=-1, tags=None, steam_url=""):
+    def __init__(self, name="", game_id=-1, tags=None, steam_url="", popularity=0):
         self.id = game_id
         self._name = name
         self.tags = tags
         self.steam_url = steam_url
+        self.popularity = popularity
 
     @property
     def name(self):
         return self._name
 
     def from_db_row(self, row: Iterable, tags: Iterable[Tag]):
-        self.id, self._name, self.steam_url = row
+        self.id, self._name, self.steam_url, self.popularity = row
         self.tags = tags
         return self
 
