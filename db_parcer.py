@@ -49,4 +49,4 @@ for url in urls:
     popularity = get_popularity(soup)
     print("Тэги:\n", *tags, '\nПопулярность: \n', popularity)
 
-    time.sleep(10)
+    time.sleep(45)
