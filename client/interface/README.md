@@ -4,3 +4,4 @@
 #### Просто запускаем файл **[main_interface.py](https://github.com/ashrov/game_guesser/blob/main/client/interface/main_interface.py)** 
 ![](/Users/sliwmen/Desktop/21A69D7E-30CD-43EC-8EE5-9A3AB61DA854.jpeg)
 ![Image alt](https://github.com/ashrov/game_guesser/blob/main/client/interface/res/21A69D7E-30CD-43EC-8EE5-9A3AB61DA854.jpeg)
+### Работайте, Иван... ###
