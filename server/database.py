@@ -8,7 +8,7 @@ DB_TABLES = {
     "games": ("id INTEGER PRIMARY KEY",
               "game_name TEXT",
               "steam_url TEXT",
-              "popularity INT"),
+              "reviews_count INT"),
     "tags": ("id INTEGER PRIMARY KEY",
              "tag_name TEXT",
              "question TEXT",
@@ -36,12 +36,11 @@ class DataBase:
 
     def connect(self):
         try:
-            self._connection = connect(config.DATABASE_NAME)
+            self._connection = connect(config.DATABASE_NAME, isolation_level=None)
         except ConnectionError as er:
             print(f"unable to connect to {config.DATABASE_NAME}. {er}")
         else:
             print(f"{config.DATABASE_NAME} connected")
-            self._connection.isolation_level = None
             self._cursor = self._connection.cursor()
 
     def disconnect(self):
@@ -49,16 +48,26 @@ class DataBase:
         self._connection.close()
         print(f"{config.DATABASE_NAME} disconnected")
 
-    def add_game(self, game: Game):
-        sql = "INSERT INTO games (game_name, steam_url, popularity) VALUES (?, ?, ?)"
-        self._cursor.execute(sql, (game.name, game.steam_url, game.popularity))
-        for tag in game.tags:
-            self.add_tag_to_game(game, tag)
+    def drop_games(self):
+        sql = "DROP TABLE games;" \
+              "DROP TABLE game_to_tag;" \
+              "UPDATE tags SET usage_count = 0"
+        self._cursor.executescript(sql)
+        self._create_tables()
 
-    def add_tag_to_game(self, game: Game, tag: Tag):
+    def add_game(self, game: Game):
+        sql = "INSERT INTO games (game_name, steam_url, reviews_count) VALUES (?, ?, ?)"
+        self._cursor.execute(sql, (game.name, game.steam_url, game.reviews_count))
+        print("game row added")
+        for tag in game.tags:
+            self._link_tag_to_game(game, tag)
+            print(f"({tag}) linked")
+
+    def _link_tag_to_game(self, game: Game, tag: Tag):
         if tag.name not in self._tags_list.names_list:
             self._add_tag(tag)
 
+        self.increment_usage(tag)
         sql = "INSERT INTO game_to_tag (game_id, tag_id) " \
               "SELECT games.id, tags.id FROM games, tags WHERE games.game_name = ? AND tags.tag_name = ?"
         self._cursor.execute(sql, (game.name, tag.name))
@@ -94,4 +103,5 @@ class DataBase:
     def increment_usage(self, tag: Tag):
         sql = f"UPDATE tags SET usage_count = usage_count + 1 WHERE tag_name = ?"
         self._cursor.execute(sql, (tag.name, ))
+        tag.usage_count += 1
 

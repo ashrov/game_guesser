@@ -28,16 +28,25 @@ class Tag:
 
 
 class TagsList:
-    def __init__(self, tags_list: Iterable[Tag]):
+    def __init__(self, tags_list: Iterable[Tag] = []):
         self._list = list(tags_list)
-        self._names_array = [tag.name for tag in self._list]
+        self._names_list = [tag.name for tag in self._list]
 
     @property
     def names_list(self):
-        return self._names_array
+        return self._names_list
+
+    def from_names_list(self, names_list: Iterable[str] = []):
+        self._names_list = list(names_list)
+        self._list = [Tag(name=name) for name in names_list]
+        return self
+
+    def __str__(self):
+        return str(self._names_list)
 
     def __iter__(self):
         self.i = 0
+        return self
 
     def __next__(self):
         if self.i < len(self._list):
@@ -49,23 +58,23 @@ class TagsList:
 
     def append(self, new_tag: Tag):
         self._list.append(new_tag)
-        self._names_array.append(new_tag.name)
+        self._names_list.append(new_tag.name)
 
 
 class Game:
-    def __init__(self, name="", game_id=-1, tags=None, steam_url="", popularity=0):
+    def __init__(self, name="", game_id=-1, tags=[], steam_url="", reviews_count=0):
         self.id = game_id
         self._name = name
         self.tags = tags
         self.steam_url = steam_url
-        self.popularity = popularity
+        self.reviews_count = reviews_count
 
     @property
     def name(self):
         return self._name
 
     def from_db_row(self, row: Iterable, tags: Iterable[Tag]):
-        self.id, self._name, self.steam_url, self.popularity = row
+        self.id, self._name, self.steam_url, self.reviews_count = row
         self.tags = tags
         return self
 
