@@ -73,7 +73,7 @@ class Game:
     def name(self):
         return self._name
 
-    def from_db_row(self, row: Iterable, tags: Iterable[Tag]):
+    def from_db_row(self, row: Iterable, tags: Iterable):
         self.id, self._name, self.steam_url, self.reviews_count = row
         self.tags = tags
         return self

@@ -6,11 +6,11 @@ import config
 
 DB_TABLES = {
     "games": ("id INTEGER PRIMARY KEY",
-              "game_name TEXT",
+              "game_name TEXT UNIQUE",
               "steam_url TEXT",
               "reviews_count INT"),
     "tags": ("id INTEGER PRIMARY KEY",
-             "tag_name TEXT",
+             "tag_name TEXT UNIQUE",
              "question TEXT",
              "usage_count INTEGER DEFAULT 0"),
     "game_to_tag": ("game_id INT",
@@ -21,12 +21,10 @@ DB_TABLES = {
 class DataBase:
     _connection: Connection
     _cursor: Cursor
-    _tags_list: TagsList
 
     def __init__(self):
         self.connect()
         self._create_tables()
-        self._tags_list = TagsList(self.get_all_tags())
 
     def _create_tables(self):
         for table_name, columns in DB_TABLES.items():
@@ -58,19 +56,18 @@ class DataBase:
     def add_game(self, game: Game):
         sql = "INSERT INTO games (game_name, steam_url, reviews_count) VALUES (?, ?, ?)"
         self._cursor.execute(sql, (game.name, game.steam_url, game.reviews_count))
-        print("game row added")
-        for tag in game.tags:
-            self._link_tag_to_game(game, tag)
-            print(f"({tag}) linked")
+        for tag_name in game.tags:
+            self._link_tag_to_game(game, tag_name)
 
-    def _link_tag_to_game(self, game: Game, tag: Tag):
-        if tag.name not in self._tags_list.names_list:
-            self._add_tag(tag)
-
-        self.increment_usage(tag)
+    def _link_tag_to_game(self, game: Game, tag_name: str):
+        try:
+            self._add_tag(tag_name)
+        except:
+            pass
+        self.increment_usage(tag_name)
         sql = "INSERT INTO game_to_tag (game_id, tag_id) " \
               "SELECT games.id, tags.id FROM games, tags WHERE games.game_name = ? AND tags.tag_name = ?"
-        self._cursor.execute(sql, (game.name, tag.name))
+        self._cursor.execute(sql, (game.name, tag_name))
 
     def get_all_games(self) -> list[Game]:
         sql = "SELECT * from games"
@@ -92,16 +89,11 @@ class DataBase:
         self._cursor.execute(sql)
         return [Tag().from_db_row(line) for line in self._cursor.fetchall()]
 
-    def _add_tag(self, tag: Tag):
-        sql = f"INSERT INTO tags (tag_name, question) VALUES (?, ?)"
-        self._cursor.execute(sql, (tag.name, tag.question))
-        sql = f"SELECT id FROM tags WHERE tag_name = ?"
-        self._cursor.execute(sql, (tag.name, ))
-        tag.id = self._cursor.fetchone()[0]
-        self._tags_list.append(tag)
+    def _add_tag(self, tag_name: str):
+        sql = f"INSERT INTO tags (tag_name) VALUES (?)"
+        self._cursor.execute(sql, (tag_name,))
 
-    def increment_usage(self, tag: Tag):
+    def increment_usage(self, tag):
         sql = f"UPDATE tags SET usage_count = usage_count + 1 WHERE tag_name = ?"
-        self._cursor.execute(sql, (tag.name, ))
-        tag.usage_count += 1
+        self._cursor.execute(sql, (tag, ))
 
