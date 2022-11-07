@@ -1,15 +1,14 @@
 import sqlite3
-import time
+from time import sleep
 from bs4 import BeautifulSoup
 import requests
-import atexit
 
 from utils import Game
 from database import DataBase
 
 
 MAIN_URL = "https://store.steampowered.com/search/?page={page_number}"
-GAMES_COUNT_TO_PARSE = 10
+GAMES_COUNT_TO_PARSE = 1000
 
 
 def get_urls(html) -> list:
@@ -41,7 +40,8 @@ def get_game_from_game_url(game_page_url: str) -> Game:
     tags = get_tags(game_html)
     try:
         reviews_count = get_reviews_count(game_html)
-    except:
+    except Exception as er:
+        print(f"{er}. Cannot find reviews count. It was set to 0.")
         reviews_count = 0
     name = get_game_name(game_html)
 
@@ -69,8 +69,9 @@ def parse_main_page(page: int, db: DataBase) -> int:
             print("repeated games")
         else:
             games_count += 1
-            print(f"Game added. Info:\n{game} added to db. \n{games_count=}\n")
-        time.sleep(1)
+            print(f"Game added. Info:\n{game} added to db. \n"
+                  f"Page: {page}. Games on page: {games_count}\n")
+        sleep(0.5)
 
     return games_count
 
