@@ -1,13 +1,15 @@
+import sqlite3
 import time
 from bs4 import BeautifulSoup
 import requests
+import atexit
 
-from utils import TagsList, Game
+from utils import Game
 from database import DataBase
 
 
-MAIN_URL = "https://store.steampowered.com/search/?page={page_number}&count=100"
-PAGES_COUNT = 10  # games count is (pages_count * 100)
+MAIN_URL = "https://store.steampowered.com/search/?page={page_number}"
+GAMES_COUNT_TO_PARSE = 10
 
 
 def get_urls(html) -> list:
@@ -28,45 +30,73 @@ def get_tags(html) -> list:
 
 
 def get_game_name(html) -> str:
-    all_names = html.findAll('div', class_="apphub_AppName")
-    filtered_names = [name.text for name in all_names]
-    return filtered_names[0]
+    name = html.find('div', id="appHubAppName", class_="apphub_AppName").text
+    return name
 
 
-def get_game_from_game_url(url: str) -> Game:
-    game_page = requests.get(game_url)
+def get_game_from_game_url(game_page_url: str) -> Game:
+    game_page = requests.get(game_page_url)
     game_html = BeautifulSoup(game_page.text, "html.parser")
 
     tags = get_tags(game_html)
-    reviews_count = get_reviews_count(game_html)
+    try:
+        reviews_count = get_reviews_count(game_html)
+    except:
+        reviews_count = 0
     name = get_game_name(game_html)
 
     print("creating game...")
-    game = Game(name=name, tags=tags, reviews_count=reviews_count, steam_url=game_url)
-
-    return game
+    return Game(name=name, tags=tags, reviews_count=reviews_count, steam_url=game_page_url)
 
 
-db = DataBase()
-db.drop_games()
+def parse_main_page(page: int, db: DataBase) -> int:
+    """ :return: count of parsed games """
 
-for page_number in range(1, PAGES_COUNT + 1):
-    print(f"parsing {page_number} / {PAGES_COUNT} page...\n")
-    url = MAIN_URL.format(page_number=page_number)
+    print(f"parsing {page} page...\n")
+    url = MAIN_URL.format(page_number=page)
     main_page = requests.get(url)
     main_html = BeautifulSoup(main_page.text, "html.parser")
     games_urls = get_urls(main_html)
 
+    games_count = 0
     for game_url in games_urls:
-        game = None
-        while not game:
-            try:
-                game = get_game_from_game_url(game_url)
-            except:
-                print("Error while parsing game. Trying parse again...")
+        print(f"parsing {game_url}")
+        game = get_game_from_game_url(game_url)
+        print(f"adding game ({game.name}) to db...")
+        try:
+            db.add_game(game)
+        except sqlite3.IntegrityError:
+            print("repeated games")
+        else:
+            games_count += 1
+            print(f"Game added. Info:\n{game} added to db. \n{games_count=}\n")
+        time.sleep(1)
 
-        print("adding game to db...")
-        db.add_game(game)
-        print(f"Game added. Info:\n{game} added to db\n")
+    return games_count
 
-db.disconnect()
+
+def start_parsing(db: DataBase):
+    page_number = 1
+    games_count = 0
+    while games_count < GAMES_COUNT_TO_PARSE:
+        games_count += parse_main_page(page_number, db)
+        page_number += 1
+
+
+if __name__ == "__main__":
+    database = DataBase()
+    savepoint_name = "parsing_start"
+    try:
+        database.set_savepoint(savepoint_name)
+        database.delete_games()
+        start_parsing(database)
+        database.release_savepoint(savepoint_name)
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt: rollback db.")
+        database.rollback_to_savepoint(savepoint_name)
+    finally:
+        database.disconnect()
+
+
+
+
