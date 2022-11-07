@@ -10,6 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.Qt import *
+from button_animation import JumpButton
 
 
 class Ui_MainWindow(object):
@@ -24,8 +25,9 @@ class Ui_MainWindow(object):
         self.label.setPixmap(QtGui.QPixmap("res/sppr_win_main_without_text.png"))
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
-        self.Start = QtWidgets.QPushButton(self.centralwidget)
-        self.Start.setGeometry(QtCore.QRect(700, 530, 151, 81))
+
+        self.Start = JumpButton(MainWindow)
+        self.Start.setGeometry(700, 530, 151, 81)
         font = QtGui.QFont()
         font.setFamily("Apple SD Gothic Neo")
         font.setPointSize(24)
@@ -86,16 +88,12 @@ class Ui_MainWindow(object):
         self.label_4.setAlignment(QtCore.Qt.AlignCenter)
         self.label_4.setObjectName("label_4")
         MainWindow.setCentralWidget(self.centralwidget)
-
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
         self.eff = QGraphicsOpacityEffect()
         self.eff.setOpacity(0.0)
         self.label_4.setGraphicsEffect(self.eff)
-
         self.Start.setCheckable(True)
-
         self.animation = QPropertyAnimation(self.eff, b'opacity')
 
         self.animation.setDuration(3500)
