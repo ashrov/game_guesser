@@ -26,6 +26,9 @@ class Tag:
     def __str__(self) -> str:
         return f"Tag: {self._name}; Question: {self._question}"
 
+    def __lt__(self, other):
+        return self.usage_count < other.usage_count
+
 
 class TagsList:
     def __init__(self, tags_list: Iterable[Tag] = []):
@@ -83,6 +86,16 @@ class Game:
 
     def __str__(self) -> str:
         return f"Name: {self._name}; Tags: {self.tags}"
+
+    def to_socket_message(self) -> bytes:
+        data = f"({self.id}, {self._name}, {self.steam_url}, {self.reviews_count})"
+        return data.encode('utf-8')
+
+    def __hash__(self) -> int:
+        return self.id
+
+    def __lt__(self, other):
+        return self.reviews_count < other.reviews_count
 
 
 class User:
