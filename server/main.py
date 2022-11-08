@@ -1,8 +1,8 @@
-from database import DataBase
+from server import Server
 
-
-db = DataBase()
-
-db.disconnect()
-
-
+server = None
+try:
+    server = Server()
+finally:
+    if server:
+        server.close()

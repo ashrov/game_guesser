@@ -1,11 +1,12 @@
 import socket
 
-import guesser
+from guesser import Guesser
 import config_network
 
 
 class Server:
     def __init__(self):
+        self.guesser = Guesser()
         self.clients = []
         self.server = socket.socket()
         self.server.bind(config_network.SERVER_ADDR)
@@ -19,8 +20,8 @@ class Server:
 
     def listen_clients(self, conn):
         tags_message = conn.recv(4096).decode('utf-8')
-        answer = guesser.guesser(tags_message)
-        conn.send(str(answer).encode('utf-8'))
+        answer = self.guesser.guess_game(tags_message)
+        conn.send(answer.to_socket_message())
 
-
-server = Server()
+    def close(self):
+        self.guesser.close()
