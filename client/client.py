@@ -18,7 +18,7 @@ class Client:
         self.client.send(test_message2.encode('utf-8'))
         while 1:
             m = self.client.recv(4096).decode('utf-8')
-            print(m.split(", ")[1][1:-1])
+            print(m.split(", ")[1])
             break
 
 
