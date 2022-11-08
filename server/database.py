@@ -94,14 +94,19 @@ class DataBase:
         return [Game().from_db_row(line, self._get_game_tags(line[0])) for line in self._cursor.fetchall()]
 
     def _get_game_tags(self, game_id: int) -> list[str]:
-        sql = "select * from tags where id IN " \
+        sql = "select * from tags where id in " \
               "(select tag_id FROM game_to_tag where game_id = ?)"
         self._cursor.execute(sql, (game_id, ))
         return [Tag().from_db_row(row) for row in self._cursor.fetchall()]
 
-    def _get_tag_by_id(self, tag_id: int) -> Tag:
+    def get_tag_by_id(self, tag_id: int) -> Tag:
         sql = "select * from tags where id = ?"
         self._cursor.execute(sql, (tag_id, ))
+        return Tag().from_db_row(self._cursor.fetchone())
+
+    def get_tag_by_name(self, tag_name: str) -> Tag:
+        sql = "select * from tags where tag_name = ?"
+        self._cursor.execute(sql, (tag_name,))
         return Tag().from_db_row(self._cursor.fetchone())
 
     def get_all_tags(self) -> list[Tag]:
@@ -119,3 +124,22 @@ class DataBase:
     def increment_usage(self, tag):
         sql = f"update tags set usage_count = usage_count + 1 where tag_name = ?"
         self._cursor.execute(sql, (tag, ))
+
+    def get_games_with_tag(self, tag: Tag) -> list[Game]:
+        if tag.id > 0:
+            game_id_select_sql = "select game_id from game_to_tag where tag_id = ?"
+            params = (tag.id, )
+        else:
+            game_id_select_sql = "select game_id from game_to_tag WHERE tag_id in " \
+                                 "(select id from tags where tag_name = ?)"
+            params = (tag.name, )
+
+        sql = f"select * from games where id in ({game_id_select_sql})"
+        self._cursor.execute(sql, params)
+
+        games = []
+        for row in self._cursor.fetchall():
+            tags = self._get_game_tags(row[0])
+            games.append(Game().from_db_row(row, tags))
+
+        return games
