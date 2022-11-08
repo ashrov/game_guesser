@@ -1,87 +1,40 @@
-import sqlite3
-
 from database import DataBase
 from utils import Game, Tag
 
-db = DataBase()
-all_tags = db.get_all_tags()
 
-sqlite_connection = sqlite3.connect('database.db')
-cursor = sqlite_connection.cursor()
+class Guesser:
+    def __init__(self):
+        self.db = DataBase()
+        self.all_tags = set(self.db.get_all_tags())
 
+    def close(self):
+        self.db.disconnect()
 
-def search_games(tmp_game: Game) -> list[Game]:
-    pass
+    def guess_game(self, string):
+        tags_names = string.split('_')
+        tag_list = [self.db.get_tag_by_name(tag_name) for tag_name in tags_names]
+        tag_list.sort()
 
+        return self.selection(tag_list)
 
-def get_tag(tmp_game: Game) -> Tag:
-    return Tag("", "")
+    def selection(self, tags: list[Tag]):
+        ans = self.sort_games(tags)
 
+        while not ans:
+            tags.pop()
+            ans = self.sort_games(tags)
 
-def close():
-    db.disconnect()
+        return ans[0]
 
+    def sort_games(self, tags) -> list[Game]:
+        ans = self.all_tags
+        for tag in tags:
+            temp = self.db.get_games_with_tag(tag)
+            ans = set(temp) & ans
+            if not ans:
+                break
 
-def guesser(string):
-    tags = string.split('_')
-    tags.sort(key=compare_tags, reverse=True)
-    print(tags)
+        ans = list(ans)
+        ans.sort(reverse=True)
 
-    for i in range(len(tags)):
-        tags[i] = compare_tags(tags[i], 0)
-
-    close()
-    return selection(tags)
-
-
-def selection(tags):
-    ans = sort_games(tags)
-    flag = False
-
-    while not flag:
-        try:
-            game_select = "SELECT * from games WHERE id = ?"
-            cursor.execute(game_select, (ans[0],))
-            record = cursor.fetchall()
-            flag = True
-        except:
-            del (tags[-1])
-            ans = sort_games(tags)
-
-    return record
-
-
-def compare_games(a, num=3):
-    rate_select = "SELECT * from games WHERE id = ?"
-    cursor.execute(rate_select, (a,))
-    record = cursor.fetchone()[num]
-
-    return int(record)
-
-
-def compare_tags(a, num=3):
-    rate_select = "SELECT * from tags WHERE tag_name = ?"
-    cursor.execute(rate_select, (a,))
-    record = cursor.fetchone()[num]
-
-    return int(record)
-
-
-def search_one_tag(tags, num):
-    game_select = "SELECT * from game_to_tag WHERE tag_id = ?"
-    cursor.execute(game_select, (tags[num],))
-    games = cursor.fetchall()
-    for i in range(len(games)):
-        games[i] = games[i][0]
-    return games
-
-
-def sort_games(tags):
-    ans = search_one_tag(tags, 0)
-    for i in range(1, len(tags)):
-        temp = search_one_tag(tags, i)
-        ans = list(set(temp) & set(ans))
-
-    ans.sort(key=compare_games, reverse=True)
-
-    return ans
+        return ans
