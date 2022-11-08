@@ -106,7 +106,7 @@ class DataBase:
 
     def get_tag_by_name(self, tag_name: str) -> Tag:
         sql = "select * from tags where tag_name = ?"
-        self._cursor.execute(sql, (tag_name,))
+        self._cursor.execute(sql, (tag_name, ))
         return Tag().from_db_row(self._cursor.fetchone())
 
     def get_all_tags(self) -> list[Tag]:
