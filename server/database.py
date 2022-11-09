@@ -93,6 +93,11 @@ class DataBase:
         self._cursor.execute(sql)
         return [Game().from_db_row(line, self._get_game_tags(line[0])) for line in self._cursor.fetchall()]
 
+    def get_games_count(self):
+        sql = "select * from games"
+        self._cursor.execute(sql)
+        return len(self._cursor.fetchall())
+
     def _get_game_tags(self, game_id: int) -> list[str]:
         sql = "select * from tags where id in " \
               "(select tag_id FROM game_to_tag where game_id = ?)"
