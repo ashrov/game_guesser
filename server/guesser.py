@@ -18,15 +18,15 @@ class Guesser:
         return self.selection(tag_list)
 
     def selection(self, tags: list[Tag]):
-        ans = self.sort_games(tags)
+        ans = self.select_games_by_tags(tags)
 
         while not ans:
             tags.pop(-1)
-            ans = self.sort_games(tags)
+            ans = self.select_games_by_tags(tags)
 
         return ans[0]
 
-    def sort_games(self, tags) -> list[Game]:
+    def select_games_by_tags(self, tags: list[Tag]) -> list[Game]:
         ans = self.all_games
         for tag in tags:
             temp = self.db.get_games_with_tag(tag)
