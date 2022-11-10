@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import Connection, Cursor, connect
 
 from utils import Game, Tag
-import config
+from config import DATABASE_NAME
 
 
 DB_TABLES = {
@@ -40,11 +40,11 @@ class DataBase:
 
     def _connect(self):
         try:
-            self._connection = connect(config.DATABASE_NAME)
+            self._connection = connect(DATABASE_NAME)
         except Exception as er:
-            print(f"unable to connect to {config.DATABASE_NAME}. {er}")
+            print(f"unable to connect to {DATABASE_NAME}. {er}")
         else:
-            print(f"{config.DATABASE_NAME} connected")
+            print(f"{DATABASE_NAME} connected")
             self._cursor = self._connection.cursor()
 
     def execute(self, sql):
@@ -62,7 +62,7 @@ class DataBase:
     def disconnect(self):
         self._cursor.close()
         self._connection.close()
-        print(f"{config.DATABASE_NAME} disconnected")
+        print(f"{DATABASE_NAME} disconnected")
 
     def delete_games(self):
         sqls = ("delete from games",
@@ -75,11 +75,15 @@ class DataBase:
         self.set_savepoint("adding_game")
 
         sql = "insert into games (game_name, steam_url, reviews_count) values (?, ?, ?)"
-        self._cursor.execute(sql, (game.name, game.steam_url, game.reviews_count))
-        for tag_name in game.tags:
-            self._link_tag_to_game(game, tag_name)
+        try:
+            self._cursor.execute(sql, (game.name, game.steam_url, game.reviews_count))
+        except sqlite3.IntegrityError:
+            print("repeated game")
+        else:
+            for tag_name in game.tags:
+                self._link_tag_to_game(game, tag_name)
 
-        self.release_savepoint("adding_game")
+            self.release_savepoint("adding_game")
 
     def _link_tag_to_game(self, game: Game, tag_name: str):
         self._add_tag(tag_name)
@@ -91,7 +95,7 @@ class DataBase:
     def get_all_games(self) -> list[Game]:
         sql = "select * from games"
         self._cursor.execute(sql)
-        return [Game().from_db_row(line, self._get_game_tags(line[0])) for line in self._cursor.fetchall()]
+        return [Game().from_db_row(line, []) for line in self._cursor.fetchall()]
 
     def get_games_count(self):
         sql = "select * from games"
@@ -144,7 +148,6 @@ class DataBase:
 
         games = []
         for row in self._cursor.fetchall():
-            tags = self._get_game_tags(row[0])
-            games.append(Game().from_db_row(row, tags))
+            games.append(Game().from_db_row(row, []))
 
         return games
