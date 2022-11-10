@@ -71,7 +71,7 @@ class DataBase:
         for sql in sqls:
             self._cursor.execute(sql)
 
-    def add_game(self, game: Game):
+    def add_game(self, game: Game) -> int:
         self.set_savepoint("adding_game")
 
         sql = "insert into games (game_name, steam_url, reviews_count) values (?, ?, ?)"
@@ -79,11 +79,13 @@ class DataBase:
             self._cursor.execute(sql, (game.name, game.steam_url, game.reviews_count))
         except sqlite3.IntegrityError:
             print("repeated game")
+            return 0
         else:
             for tag_name in game.tags:
                 self._link_tag_to_game(game, tag_name)
 
             self.release_savepoint("adding_game")
+            return 1
 
     def _link_tag_to_game(self, game: Game, tag_name: str):
         self._add_tag(tag_name)
