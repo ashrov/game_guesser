@@ -8,7 +8,7 @@ from database import DataBase
 
 
 MAIN_URL = "https://store.steampowered.com/search/?category1=998&page={page_number}"
-GAMES_COUNT_TO_PARSE = 100
+RESULT_GAMES_COUNT = 10000
 START_PAGE = 1
 CLEAR_DB = True
 
@@ -35,8 +35,8 @@ def get_tags(html) -> list:
 
 
 def get_game_name(html) -> str:
-    name = html.find('div', id="appHubAppName", class_="apphub_AppName").text
-    return name
+    name = html.find('div', id="appHubAppName", class_="apphub_AppName")
+    return name.text if name else None
 
 
 def get_game_from_game_url(game_page_url: str) -> Game | None:
@@ -67,23 +67,21 @@ def parse_main_page(page: int, db: DataBase) -> int:
         print(f"parsing {game_url}")
         game = get_game_from_game_url(game_url)
         if game:
-            try:
-                db.add_game(game)
-                games_count += 1
+            adding_result = db.add_game(game)
+            games_count += adding_result
+            if adding_result:
                 print(f"Game added ({game.name})\n"
                       f"Page: {page}. Games on page: {games_count}\n")
-            except sqlite3.IntegrityError:
-                print("repeated games")
 
-        sleep(0.5)
+        sleep(0.2)
 
     return games_count
 
 
 def start_parsing(db: DataBase):
     page_number = START_PAGE
-    games_count = 0
-    while games_count < GAMES_COUNT_TO_PARSE:
+    games_count = 0 if CLEAR_DB else db.get_games_count()
+    while games_count < RESULT_GAMES_COUNT:
         print(f"{games_count=}")
         games_count += parse_main_page(page_number, db)
         page_number += 1
@@ -98,8 +96,8 @@ if __name__ == "__main__":
             database.delete_games()
         start_parsing(database)
         database.release_savepoint(savepoint_name)
-    except KeyboardInterrupt:
-        print("KeyboardInterrupt: rollback db.")
+    except Exception as er:
+        print(f"{er}. Rollback db.")
         database.rollback_to_savepoint(savepoint_name)
     finally:
         database.disconnect()
