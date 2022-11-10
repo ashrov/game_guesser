@@ -1,3 +1,4 @@
+import json
 from typing import Iterable
 
 
@@ -67,17 +68,13 @@ class TagsList:
 class Game:
     def __init__(self, name="", game_id=-1, tags=[], steam_url="", reviews_count=0):
         self.id = game_id
-        self._name = name
+        self.name = name
         self.tags = tags
         self.steam_url = steam_url
         self.reviews_count = reviews_count
 
-    @property
-    def name(self):
-        return self._name
-
     def from_db_row(self, row: Iterable, tags: Iterable):
-        self.id, self._name, self.steam_url, self.reviews_count = row
+        self.id, self.name, self.steam_url, self.reviews_count = row
         self.tags = tags
         return self
 
@@ -85,10 +82,10 @@ class Game:
         return True if all(self.tags) == all(other.tags) else False
 
     def __str__(self) -> str:
-        return f"Name: {self._name}; Tags: {self.tags}"
+        return f"Name: {self.name}; Tags: {self.tags}"
 
     def to_socket_message(self) -> bytes:
-        data = f"({self.id}, {self._name}, {self.steam_url}, {self.reviews_count})"
+        data = f"({self.id}, {self.name}, {self.steam_url}, {self.reviews_count})"
         return data.encode('utf-8')
 
     def __hash__(self) -> int:
@@ -97,8 +94,11 @@ class Game:
     def __lt__(self, other):
         return self.reviews_count < other.reviews_count
 
+    def to_json(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+                          sort_keys=True, indent=4)
+
 
 class User:
     def __init__(self):
         self.current_game = Game()
-
