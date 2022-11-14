@@ -1,6 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource prefix='/'>
-  <file>Fonts/FontsFree-Net-Apple-SD-Gothic-Neo-Bold.ttf</file>
+  <file>Fonts/AppleSDGothicNeoR.ttf</file>
 </qresource>
 </RCC>
 
