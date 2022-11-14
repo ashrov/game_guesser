@@ -71,7 +71,7 @@ class Ui_MainWindow(object):
 
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
         self.label_3.setGeometry(QtCore.QRect(0, 140, 801, 141))
-        font = QtGui.QFont()
+        font = QtGui.QFont(fontName, 30)
         font.setFamily("Apple SD Gothic Neo")
         font.setPointSize(30)
         font.setBold(True)
@@ -86,7 +86,7 @@ class Ui_MainWindow(object):
         self.label_3.setObjectName("label_3")
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
         self.label_4.setGeometry(QtCore.QRect(0, 170, 801, 141))
-        font = QtGui.QFont()
+        font = QtGui.QFont(fontName, 30)
         font.setFamily("Apple SD Gothic Neo")
         font.setPointSize(23)
         font.setBold(False)
