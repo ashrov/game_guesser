@@ -1,5 +1,5 @@
 from database import DataBase
-from utils import Game, Tag
+from utils import Game, Tag, User
 
 from typing import Iterable
 import random
@@ -8,41 +8,53 @@ import random
 class Guesser:
     def __init__(self):
         self._db = DataBase()
-        self.all_games = set(self._db.get_all_games())
-        self.all_tags = set(self._db.get_all_tags())
 
     def close(self):
         self._db.disconnect()
 
-    def guess_game(self, tags, selection_size) -> list[Game]:
-        tags.sort(reverse=True)
-
-        return self.selection(tags, selection_size)
-
-    def selection(self, tags: list[Tag], selection_size):
-        ans = self.select_games_by_tags(tags)
-
+    def guess_game(self, user: User, selection_size=-1) -> list[Game]:
+        ans = self.selection(user)
         while len(ans) < selection_size:
-            tags.pop(-1)
-            ans = self.select_games_by_tags(tags)
+            user.delete_useless_tag()
+            ans = self.selection(user)
 
+        if selection_size == -1:
+            selection_size = len(ans)
+
+        ans = list(ans)
         return ans[0:selection_size]
 
-    def select_games_by_tags(self, tags: list[Tag]) -> list[Game]:
-        ans = self.all_games
+    def selection(self, user: User):
+        good_games = self.select_good_games(user.good_tags)
+        bad_games = self.select_bad_games(user.bad_tags)
+        return good_games - bad_games
+
+    def select_good_games(self, tags: list[Tag]) -> set[Game]:
+        ans = set(self._db.get_all_games())
         for tag in tags:
             temp = self._db.get_games_with_tag(tag)
             ans = set(temp) & ans
             if not ans:
                 break
 
-        ans = list(ans)
-        ans.sort(reverse=True)
+        return ans
+
+    def select_bad_games(self, tags: list[Tag]) -> set[Game]:
+        ans = set()
+        for tag in tags:
+            temp = self._db.get_games_with_tag(tag)
+            ans = set(temp) | ans
 
         return ans
 
     def get_new_tag(self, current_tags: Iterable[Tag]) -> Tag:
         cur = set(current_tags)
-        remaining_tags = self.all_tags - cur
-        return random.choice(tuple(remaining_tags))
+        remaining_tags = set(self._db.get_all_tags()) - cur
+        remaining_tags = sorted(list(remaining_tags))
+        chances = []
+        for i, tag in enumerate(remaining_tags, start=0):
+            chances += [i] * tag.usage_count
+
+        n = random.choice(chances)
+        return remaining_tags[n]
 
