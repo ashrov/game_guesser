@@ -1,8 +1,5 @@
-from server import Server
+from server import MainServer
 
-server = None
-try:
-    server = Server()
-finally:
-    if server:
-        server.close()
+
+server = MainServer()
+
