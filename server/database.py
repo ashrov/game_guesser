@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import Connection, Cursor, connect
 
 from utils import Game, Tag
-from config import DATABASE_NAME
+from config import DATABASE_PATH
 
 
 DB_TABLES = {
@@ -40,11 +40,11 @@ class DataBase:
 
     def _connect(self):
         try:
-            self._connection = connect(DATABASE_NAME)
+            self._connection = connect(DATABASE_PATH)
         except Exception as er:
-            print(f"unable to connect to {DATABASE_NAME}. {er}")
+            print(f"unable to connect to {DATABASE_PATH}. {er}")
         else:
-            print(f"{DATABASE_NAME} connected")
+            print(f"{DATABASE_PATH} connected")
             self._cursor = self._connection.cursor()
 
     def execute(self, sql):
@@ -62,7 +62,7 @@ class DataBase:
     def disconnect(self):
         self._cursor.close()
         self._connection.close()
-        print(f"{DATABASE_NAME} disconnected")
+        print(f"{DATABASE_PATH} disconnected")
 
     def delete_games(self):
         sqls = ("delete from games",
@@ -83,7 +83,6 @@ class DataBase:
         else:
             for tag_name in game.tags:
                 self._link_tag_to_game(game, tag_name)
-
             self.release_savepoint("adding_game")
             return 1
 
