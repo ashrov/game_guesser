@@ -21,14 +21,26 @@ class Tag:
     def question(self) -> str:
         return self._question
 
-    def __eq__(self, other):
-        return True if self._name == other.name else False
+    def __eq__(self, other) -> bool:
+        return True if self._name == other.table_name else False
 
     def __str__(self) -> str:
         return f"Tag: {self._name}; Question: {self._question}"
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         return self.usage_count < other.usage_count
+
+    def __hash__(self) -> int:
+        return self.id
+
+    def to_json(self) -> str:
+        data = {
+            'tag_name': self.name,
+            'id': self.id,
+            'question': self.question,
+            'usage_count': self.usage_count
+        }
+        return json.dumps(data)
 
 
 class TagsList:
@@ -95,10 +107,24 @@ class Game:
         return self.reviews_count < other.reviews_count
 
     def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, indent=4)
+        data = {
+            'game_name': self.name,
+            'id': self.id,
+            'steam_url': self.steam_url,
+            'reviews_count': self.reviews_count
+        }
+        return json.dumps(data)
 
 
 class User:
-    def __init__(self):
-        self.current_game = Game()
+    current_tag: Tag
+
+    def __init__(self, connection):
+        self.good_tags: list[Tag] = []
+        self.bad_tags: list[Tag] = []
+        self.connection = connection
+        self.current_games = None
+
+    def reset_tags(self):
+        self.good_tags.clear()
+        self.bad_tags.clear()
