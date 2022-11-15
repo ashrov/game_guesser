@@ -12,16 +12,17 @@ test_message3 = 'Multiplayer_Strategy'
 class Client:
 
     def __init__(self):
-        self.client = socket.socket()
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # self.client.bind(("127.0.0.1", 9999))
         self.client.connect(config_network.SERVER_ADDR)
         self.start()
 
     def start(self):
         while cmd := input():
-            self.client.send(cmd.encode('utf-8'))
+            message = json.dumps({'intent': cmd})
+            self.client.send(message.encode('utf-8'))
             m = self.client.recv(4096).decode('utf-8')
             print(m)
 
 
+if __name__ == "__main__":
+    client = Client()
