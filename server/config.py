@@ -1,4 +1,7 @@
 import os
 
 
-DATABASE_NAME = os.path.dirname(__file__) + r"\database.db"
+DATABASE_FILE_NAME = r"\database.db"
+DATABASE_PATH = os.path.dirname(__file__) + DATABASE_FILE_NAME
+
+GAME_SELECTION_SIZE = 3
