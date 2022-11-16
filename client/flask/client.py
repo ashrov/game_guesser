@@ -4,6 +4,7 @@ import socket
 import config_network
 
 logging.basicConfig(level=logging.INFO)
+socket_buffer_size = 1024
 
 
 def get_server_address():
@@ -25,15 +26,17 @@ class Client:
     def send_message(self, js: dict) -> dict:
         self.client.send(json.dumps(js).encode('utf-8'))
         response = self.get_response()
+        print(response)
         return json.loads(response)
 
     def get_response(self):
         message = ""
-        response_len = 4096
-        while response_len == 4096:
-            response = self.client.recv(4096)
+        response_len = socket_buffer_size
+        while response_len == socket_buffer_size:
+            response = self.client.recv(socket_buffer_size)
             message += response.decode('utf-8')
             response_len = len(response)
+
         return message
 
 
