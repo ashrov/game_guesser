@@ -6,7 +6,7 @@ import config_network
 class Client:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client.connect(config_network.SERVER_ADDR)
+        self.client.connect(self.get_server_address())
         self.start()
 
     def start(self):
@@ -27,6 +27,14 @@ class Client:
         while response := self.client.recv(4096):
             message += response.decode('utf-8')
         print(message)
+
+    @staticmethod
+    def get_server_address():
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        s.connect(('<broadcast>', 0))
+        host = s.getsockname()[0]
+        return host, config_network.SERVER_PORT
 
 
 if __name__ == "__main__":

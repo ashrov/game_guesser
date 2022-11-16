@@ -1,5 +1,5 @@
 import json
-from socket import socket
+import socket
 from threading import Thread
 import logging
 
@@ -25,7 +25,7 @@ DN = "dn"
 
 
 class ClientThread:
-    def __init__(self, sock: socket, user: User):
+    def __init__(self, sock: socket.socket, user: User):
         self.connection, self.address = user.connection, user.address
         self.guesser = Guesser()
         self.socket = sock
@@ -91,9 +91,8 @@ class MainServer:
     def __init__(self):
         self._clients = dict()
         self._clint_threads = []
-        self.server = socket()
-        self.server.bind(config_network.SERVER_ADDR)
-        print(self.server.getsockname())
+        self.server = socket.socket()
+        self.server.bind(self.get_server_address())
         logging.info("listening")
         self.handle_connections()
 
@@ -110,6 +109,14 @@ class MainServer:
             client_thread = Thread(target=ClientThread, args=(self.server, user))
             self._clint_threads.append(client_thread)
             client_thread.start()
+
+    @staticmethod
+    def get_server_address():
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        s.connect(('<broadcast>', 0))
+        host = s.getsockname()[0]
+        return host, config_network.SERVER_PORT
 
 
 if __name__ == "__main__":

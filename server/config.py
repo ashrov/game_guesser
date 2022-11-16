@@ -1,7 +1,7 @@
 import os
 
 
-SERVER_ADDR = ('192.168.158.1', 6666)
+SERVER_PORT = 6666
 
 DATABASE_FILE_NAME = r"/database.db"
 DATABASE_PATH = os.path.dirname(__file__) + DATABASE_FILE_NAME
