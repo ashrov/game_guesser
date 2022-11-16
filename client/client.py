@@ -1,12 +1,19 @@
 import json
+import logging
 import socket
 import config_network
+
+
+logging.basicConfig(level=logging.INFO)
 
 
 class Client:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client.connect(self.get_server_address())
+        server_addr = self.get_server_address()
+        logging.info(f"trying to connect to {server_addr}")
+        self.client.connect(server_addr)
+        logging.info(f"connected to {server_addr}")
         self.start()
 
     def start(self):
@@ -37,7 +44,7 @@ class Client:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         s.connect(('<broadcast>', 0))
         host = s.getsockname()[0]
-        return host, config_network.SERVER_PORT
+        return "localhost", config_network.SERVER_PORT
 
 
 if __name__ == "__main__":
