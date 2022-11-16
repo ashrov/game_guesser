@@ -1,16 +1,15 @@
 from database import DataBase
 from utils import Game, Tag, User
 
-from typing import Iterable
 import random
 
 
 class Guesser:
     def __init__(self):
-        self._db = DataBase()
+        self.db = DataBase()
 
     def close(self):
-        self._db.disconnect()
+        self.db.disconnect()
 
     def guess_game(self, user: User, selection_size=-1) -> list[Game]:
         ans = self.selection(user)
@@ -30,9 +29,9 @@ class Guesser:
         return good_games - bad_games
 
     def select_good_games(self, tags: list[Tag]) -> set[Game]:
-        ans = set(self._db.get_all_games())
+        ans = set(self.db.get_all_games())
         for tag in tags:
-            temp = self._db.get_games_with_tag(tag)
+            temp = self.db.get_games_with_tag(tag)
             ans = set(temp) & ans
             if not ans:
                 break
@@ -42,13 +41,13 @@ class Guesser:
     def select_bad_games(self, tags: list[Tag]) -> set[Game]:
         ans = set()
         for tag in tags:
-            temp = self._db.get_games_with_tag(tag)
+            temp = self.db.get_games_with_tag(tag)
             ans = set(temp) | ans
 
         return ans
 
     def get_new_tag(self, user: User) -> Tag:
-        remaining_tags = set(self._db.get_all_tags()) - set(user.used_tags)
+        remaining_tags = set(self.db.get_all_tags()) - set(user.used_tags)
 
         remaining_tags = sorted(list(remaining_tags))
         chances = []
@@ -57,4 +56,3 @@ class Guesser:
 
         n = random.choice(chances)
         return remaining_tags[n]
-

@@ -4,9 +4,9 @@ from threading import Thread
 import logging
 
 from config import GAME_SELECTION_SIZE
-from utils import Tag, User, CustomJSONEncoder
+from utils import Tag, Game, User, CustomJSONEncoder
 from guesser import Guesser
-from client import config_network
+from config import SERVER_PORT
 
 logging.basicConfig(level=logging.INFO)
 
@@ -22,6 +22,7 @@ ANSWER = "answer"
 YES = "yes"
 NO = "no"
 DN = "dn"
+ALL_TAGS = "all_tags"
 
 
 class ClientThread:
@@ -60,6 +61,11 @@ class ClientThread:
                 response = {CURRENT_GAMES: self.user.current_games}
             case "get_same_games":
                 response = {SAME_GAMES: self.guesser.guess_game(self.user, selection_size=GAME_SELECTION_SIZE)}
+            case "get_all_tags":
+                tags = sorted(self.guesser.db.get_all_tags(), reverse=True)
+                response = {ALL_TAGS: tags}
+            case "get_by_tags":
+                response = {CURRENT_GAMES: self.get_games_by_tags(js)}
             case _:
                 response = {ERROR: "bad intent"}
 
@@ -86,6 +92,14 @@ class ClientThread:
                 GAMES_COUNT: len(self.user.current_games)}
         return data
 
+    def get_games_by_tags(self, js: dict) -> list[Game]:
+        tags = js.get("tags", "")
+        tmp_user = User(None, None)
+        for tag_name in tags:
+            tag = self.guesser.db.get_tag_by_name(tag_name)
+            tmp_user.good_tags.append(tag)
+        return self.guesser.guess_game(tmp_user)
+
 
 class MainServer:
     _clients: dict[User]
@@ -95,7 +109,9 @@ class MainServer:
         self._clients = dict()
         self._clint_threads = []
         self.server = socket.socket()
-        self.server.bind(self.get_server_address())
+        addr = self.get_server_address()
+        logging.info(f"starting server at {addr}")
+        self.server.bind(addr)
         logging.info("listening")
         self.handle_connections()
 
@@ -119,7 +135,7 @@ class MainServer:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         s.connect(('<broadcast>', 0))
         host = s.getsockname()[0]
-        return host, config_network.SERVER_PORT
+        return "0.0.0.0", SERVER_PORT
 
 
 if __name__ == "__main__":

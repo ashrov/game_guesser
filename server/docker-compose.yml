@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  server:
+    build: .
+    expose:
+      - 36543
+    ports:
+      - "36543:36543"
