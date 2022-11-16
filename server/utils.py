@@ -160,8 +160,10 @@ class User:
 
     def delete_useless_tag(self):
         tag = self.used_tags.pop(-1)
-        self.bad_tags.remove(tag)
-        self.good_tags.remove(tag)
+        if tag in self.bad_tags:
+            self.bad_tags.remove(tag)
+        elif tag in self.good_tags:
+            self.good_tags.remove(tag)
 
 
 class CustomJSONEncoder(JSONEncoder):
