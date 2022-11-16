@@ -21,7 +21,7 @@ class Guesser:
         if selection_size == -1:
             selection_size = len(ans)
 
-        ans = list(ans)
+        ans = sorted(list(ans), reverse=True)
         return ans[0:selection_size]
 
     def selection(self, user: User):
