@@ -139,6 +139,7 @@ class User:
         self.connection = connection
         self.address = address
         self.current_games = list()
+        self.current_tag = None
 
     def reset_tags(self):
         self.good_tags.clear()

@@ -53,7 +53,6 @@ class ClientThread:
             case "get_current_games":
                 response = {CURRENT_GAMES: self.user.current_games}
             case "get_same_games":
-                tags = self.user.good_tags
                 response = {SAME_GAMES: self.guesser.guess_game(self.user, selection_size=GAME_SELECTION_SIZE)}
             case _:
                 response = {ERROR: "bad intent"}
@@ -61,7 +60,7 @@ class ClientThread:
         return json.dumps(response, cls=CustomJSONEncoder)
 
     def get_next_tag(self) -> Tag:
-        new_tag = self.guesser.get_new_tag(self.user.used_tags)
+        new_tag = self.guesser.get_new_tag(self.user)
         self.user.current_tag = new_tag
         return new_tag
 
