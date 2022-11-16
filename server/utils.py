@@ -1,4 +1,4 @@
-import json
+from json import JSONEncoder, dumps
 from typing import Iterable
 
 
@@ -22,7 +22,13 @@ class Tag:
         return self._question
 
     def __eq__(self, other) -> bool:
-        return True if self._name == other.table_name else False
+        if isinstance(other, type(self)):
+            if self.id != -1 and other.id != -1:
+                return True if self.id == other.id else False
+            else:
+                return True if self.name == other.name else False
+        else:
+            raise TypeError
 
     def __str__(self) -> str:
         return f"Tag: {self._name}; Question: {self._question}"
@@ -33,14 +39,17 @@ class Tag:
     def __hash__(self) -> int:
         return self.id
 
-    def to_json(self) -> str:
+    def get_all_data(self) -> dict:
         data = {
             'tag_name': self.name,
             'id': self.id,
             'question': self.question,
             'usage_count': self.usage_count
         }
-        return json.dumps(data)
+        return data
+
+    def to_json(self) -> str:
+        return dumps(self.get_all_data())
 
 
 class TagsList:
@@ -106,25 +115,60 @@ class Game:
     def __lt__(self, other):
         return self.reviews_count < other.reviews_count
 
-    def to_json(self):
+    def get_all_data(self) -> dict:
         data = {
             'game_name': self.name,
             'id': self.id,
             'steam_url': self.steam_url,
             'reviews_count': self.reviews_count
         }
-        return json.dumps(data)
+        return data
+
+    def to_json(self):
+        return dumps(self.get_all_data())
 
 
 class User:
     current_tag: Tag
+    current_games: list[Game]
 
-    def __init__(self, connection):
+    def __init__(self, connection, address):
         self.good_tags: list[Tag] = []
         self.bad_tags: list[Tag] = []
+        self.used_tags: list[Tag] = []
         self.connection = connection
-        self.current_games = None
+        self.address = address
+        self.current_games = list()
 
     def reset_tags(self):
         self.good_tags.clear()
         self.bad_tags.clear()
+        self.used_tags.clear()
+
+    def add_good_tag(self, tag: Tag):
+        self.good_tags.append(tag)
+        self.used_tags.append(tag)
+
+    def add_bad_tag(self, tag: Tag):
+        self.bad_tags.append(tag)
+        self.used_tags.append(tag)
+
+    def sort_all(self):
+        self.good_tags.sort(reverse=True)
+        self.bad_tags.sort(reverse=True)
+        self.used_tags.sort(reverse=True)
+
+    def delete_useless_tag(self):
+        tag = self.used_tags.pop(-1)
+        self.bad_tags.remove(tag)
+        self.good_tags.remove(tag)
+
+
+class CustomJSONEncoder(JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Game):
+            return o.get_all_data()
+        elif isinstance(o, Tag):
+            return o.get_all_data()
+        else:
+            return o
