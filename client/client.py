@@ -23,6 +23,12 @@ class Client:
                 break
             print(response)
 
+    def get_response(self):
+        message = ""
+        while response := self.client.recv(4096):
+            message += response.decode('utf-8')
+        print(message)
+
 
 if __name__ == "__main__":
     client = Client()
