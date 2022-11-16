@@ -3,7 +3,6 @@ import logging
 import socket
 import config_network
 
-
 logging.basicConfig(level=logging.INFO)
 
 

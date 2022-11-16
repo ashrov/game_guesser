@@ -1,4 +1,4 @@
-from client import Client
+from client.flask.client import Client
 
 
 client = Client()
