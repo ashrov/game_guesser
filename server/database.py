@@ -124,6 +124,17 @@ class DataBase:
         self._cursor.execute(sql)
         return [Tag().from_db_row(line) for line in self._cursor.fetchall()]
 
+    def get_possible_tags(self, tag: Tag) -> list[Tag]:
+        if not tag:
+            return []
+
+        sql = "select id, tag_name, question, usage_count from game_to_tag " \
+              "join tags on game_to_tag.tag_id = tags.id where game_id in " \
+              "(select game_id from game_to_tag where tag_id = ?)"
+        self._cursor.execute(sql, (tag.id, ))
+        return [Tag().from_db_row(row) for row in self._cursor.fetchall()]
+
+
     def _add_tag(self, tag_name: str):
         sql = f"insert into tags (tag_name) values (?)"
         try:
