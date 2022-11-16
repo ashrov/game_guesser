@@ -17,16 +17,19 @@ class Client:
             else:
                 message = json.dumps({'intent': cmd})
             self.client.send(message.encode('utf-8'))
-            response = self.client.recv(4096).decode('utf-8')
+            response = self.get_response()
             if not response:
                 break
             print(response)
 
     def get_response(self):
         message = ""
-        while response := self.client.recv(4096):
+        response_len = 4096
+        while response_len == 4096:
+            response = self.client.recv(4096)
             message += response.decode('utf-8')
-        print(message)
+            response_len = len(response)
+        return message
 
     @staticmethod
     def get_server_address():

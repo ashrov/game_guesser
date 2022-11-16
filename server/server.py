@@ -37,10 +37,13 @@ class ClientThread:
 
     def listen_client(self):
         logging.info(f"starting thread for {self.address}")
-        while data := self.connection.recv(4096):
-            message = data.decode('utf-8')
-            response = self.handle_message(message)
-            self.connection.send(response.encode('utf-8'))
+        try:
+            while data := self.connection.recv(4096):
+                message = data.decode('utf-8')
+                response = self.handle_message(message)
+                self.connection.send(response.encode('utf-8'))
+        except ConnectionResetError:
+            logging.info(f"Connection reset by client {self.address}")
         self._close()
         logging.info(f"Connection with {self.address} closed.")
 
