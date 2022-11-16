@@ -4,7 +4,6 @@ import config_network
 
 
 class Client:
-
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect(config_network.SERVER_ADDR)

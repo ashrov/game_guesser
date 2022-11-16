@@ -4,10 +4,9 @@ from threading import Thread
 import logging
 
 from config import GAME_SELECTION_SIZE
-from utils import Tag, Game, User, CustomJSONEncoder
+from utils import Tag, User, CustomJSONEncoder
 from guesser import Guesser
-import config_network
-
+from client import config_network
 
 logging.basicConfig(level=logging.INFO)
 
