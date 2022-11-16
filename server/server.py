@@ -1,11 +1,15 @@
 import json
 from socket import socket
 from threading import Thread
+import logging
 
 from config import GAME_SELECTION_SIZE
 from utils import Tag, Game, User, CustomJSONEncoder
 from guesser import Guesser
 import config_network
+
+
+logging.basicConfig(level=logging.INFO)
 
 
 # JSON constants
@@ -33,13 +37,13 @@ class ClientThread:
         self.guesser.close()
 
     def listen_client(self):
-        print(f"starting thread for {self.address}")
+        logging.info(f"starting thread for {self.address}")
         while data := self.connection.recv(4096):
             message = data.decode('utf-8')
             response = self.handle_message(message)
             self.connection.send(response.encode('utf-8'))
         self._close()
-        print(f"Connection with {self.address} closed.")
+        logging.info(f"Connection with {self.address} closed.")
 
     def handle_message(self, mes: str) -> str:
         """ :return: server answer (json dump string) """
@@ -90,7 +94,8 @@ class MainServer:
         self._clint_threads = []
         self.server = socket()
         self.server.bind(config_network.SERVER_ADDR)
-        print("listening")
+        print(self.server.getsockname())
+        logging.info("listening")
         self.handle_connections()
 
     def handle_connections(self):
