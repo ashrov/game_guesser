@@ -1,3 +1,4 @@
+import logging
 import sqlite3
 from sqlite3 import Connection, Cursor, connect
 
@@ -42,9 +43,9 @@ class DataBase:
         try:
             self._connection = connect(DATABASE_PATH)
         except Exception as er:
-            print(f"unable to connect to {DATABASE_PATH}. {er}")
+            logging.error(f"unable to connect to {DATABASE_PATH}. {er}")
         else:
-            print(f"{DATABASE_PATH} connected")
+            logging.debug(f"{DATABASE_PATH} connected")
             self._cursor = self._connection.cursor()
 
     def execute(self, sql):
@@ -62,7 +63,7 @@ class DataBase:
     def disconnect(self):
         self._cursor.close()
         self._connection.close()
-        print(f"{DATABASE_PATH} disconnected")
+        logging.debug(f"{DATABASE_PATH} disconnected")
 
     def delete_games(self):
         sqls = ("delete from games",
@@ -133,7 +134,6 @@ class DataBase:
               "(select game_id from game_to_tag where tag_id = ?)"
         self._cursor.execute(sql, (tag.id, ))
         return [Tag().from_db_row(row) for row in self._cursor.fetchall()]
-
 
     def _add_tag(self, tag_name: str):
         sql = f"insert into tags (tag_name) values (?)"
