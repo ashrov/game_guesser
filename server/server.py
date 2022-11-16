@@ -1,86 +1,113 @@
 import json
-import socket
+from socket import socket
 from threading import Thread
 
 from config import GAME_SELECTION_SIZE
-from utils import Tag, Game, User
+from utils import Tag, Game, User, CustomJSONEncoder
 from guesser import Guesser
 import config_network
 
 
-class ClientThread(Thread):
-    def __init__(self, func):
-        super().__init__(target=func)
+# JSON constants
+INTENT = "intent"
+NEW_TAG = "new_tag"
+CURRENT_GAMES = "current_games"
+SAME_GAMES = "same_games"
+ERROR = "error"
+GAMES_COUNT = "games_count"
+ANSWER = "answer"
+YES = "yes"
+NO = "no"
+DN = "dn"
 
 
-class Server:
-    _clients: dict[User]
-    _clint_threads: list[ClientThread]
-
-    def __init__(self):
+class ClientThread:
+    def __init__(self, sock: socket, user: User):
+        self.connection, self.address = user.connection, user.address
         self.guesser = Guesser()
-        self._clients = dict()
-        self._clint_threads = []
-        self.server = socket.socket()
-        self.server.bind(config_network.SERVER_ADDR)
-        print("listening")
-        self.process_connections()
+        self.socket = sock
+        self.user = user
+        self.listen_client()
 
-    def close(self):
+    def _close(self):
         self.guesser.close()
 
-    def process_connections(self):
+    def listen_client(self):
+        print(f"starting thread for {self.address}")
+        while data := self.connection.recv(4096):
+            message = data.decode('utf-8')
+            response = self.handle_message(message)
+            self.connection.send(response.encode('utf-8'))
+        self._close()
+        print(f"Connection with {self.address} closed.")
+
+    def handle_message(self, mes: str) -> str:
+        """ :return: server answer (json dump string) """
+        js = json.loads(mes)
+        match js.get(INTENT, ""):
+            case "answer":
+                response = self.answer(js.get(ANSWER, ""))
+            case "start":
+                self.user.reset_tags()
+                response = {NEW_TAG: self.get_next_tag()}
+            case "get_current_games":
+                response = {CURRENT_GAMES: self.user.current_games}
+            case "get_same_games":
+                tags = self.user.good_tags
+                response = {SAME_GAMES: self.guesser.guess_game(self.user, selection_size=GAME_SELECTION_SIZE)}
+            case _:
+                response = {ERROR: "bad intent"}
+
+        return json.dumps(response, cls=CustomJSONEncoder)
+
+    def get_next_tag(self) -> Tag:
+        new_tag = self.guesser.get_new_tag(self.user.used_tags)
+        self.user.current_tag = new_tag
+        return new_tag
+
+    def answer(self, result: str) -> dict:
+        match result:
+            case "yes":
+                self.user.add_good_tag(self.user.current_tag)
+            case "no":
+                self.user.add_bad_tag(self.user.current_tag)
+            case "dn":
+                self.user.used_tags.append(self.user.current_tag)
+            case _:
+                return {ERROR: "bad answer result"}
+
+        self.user.current_games = self.guesser.guess_game(self.user)
+        data = {NEW_TAG: self.get_next_tag(),
+                GAMES_COUNT: len(self.user.current_games)}
+        return data
+
+
+class MainServer:
+    _clients: dict[User]
+    _clint_threads: list[Thread]
+
+    def __init__(self):
+        self._clients = dict()
+        self._clint_threads = []
+        self.server = socket()
+        self.server.bind(config_network.SERVER_ADDR)
+        print("listening")
+        self.handle_connections()
+
+    def handle_connections(self):
         while True:
-            self.server.listen(1)
-            client_thread = ClientThread(self.accept_clients)
+            self.server.listen(5)
+            conn, addr = self.server.accept()
+            if addr not in self._clients.keys():
+                user = User(conn, addr)
+                self._clients[addr] = user
+            else:
+                user = self._clients[addr]
+
+            client_thread = Thread(target=ClientThread, args=(self.server, user))
             self._clint_threads.append(client_thread)
             client_thread.start()
 
-    def accept_clients(self):
-        conn, addr = self.server.accept()
-        user = User(conn)
-        self._clients[addr] = user
-        print(f"[+] starting thread for connection: {conn}")
-        while True:
-            self.listen_client(conn, user)
-
-    def listen_client(self, conn, user: User):
-        message = conn.recv(4096).decode('utf-8')
-        response = self.handle_message(message, user)
-        conn.send(response.encode('utf-8'))
-
-    def handle_message(self, mes: str, user: User) -> str:
-        """ :return: server answer (json dump string) """
-        js = json.loads(mes)
-        match js.get("intent", ""):
-            case "answer_yes":
-                response = self.answer_yes(user)
-            case "answer_no":
-                response = self.answer_no(user)
-            case "start":
-                response = self.get_next_tag(user)
-            case "get_current_games":
-                response = user.current_games
-            case _:
-                response = None
-
-        return response.to_json()
-
-    def get_next_tag(self, user: User) -> Tag:
-        new_tag = self.guesser.get_new_tag(user.good_tags + user.bad_tags)
-        user.current_tag = new_tag
-        return new_tag
-
-    def answer_yes(self, user: User) -> Tag:
-        user.good_tags.append(user.current_tag)
-        user.current_games = self.guesser.guess_game(user.good_tags, GAME_SELECTION_SIZE)
-        return self.get_next_tag(user)
-
-    def answer_no(self, user: User) -> Tag:
-        user.bad_tags.append(user.current_tag)
-        user.current_games = self.guesser.guess_game(user.good_tags, GAME_SELECTION_SIZE)
-        return self.get_next_tag(user)
-
 
 if __name__ == "__main__":
-    server = Server()
+    server = MainServer()
