@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     {% for game in games %}
-    <a href={{game["steam_url"]}}>{{game['game_name']}}</a>
-    {% endfor %}
+    <div>
+        <a href={{game["steam_url"]}}>{{game['game_name']}}</a>
+        {% endfor %}
+    </div>
 </head>
 <body>
 
