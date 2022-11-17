@@ -2,11 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <h1>Steam games with these tags:</h1>
+    <h2>They are ranked by popularity (from top to bottom)</h2>
     {% for game in games %}
     <div>
         <a href={{game["steam_url"]}}>{{game['game_name']}}</a>
         {% endfor %}
     </div>
+
+    <style>
+    body {
+    background-image: url("static/images/1.png");
+    }
+    h1 {
+    text-align: center;
+    font-family: Aclonica;
+    color: white;
+    }
+    h2 {
+    text-align: center;
+    font-family: Aclonica;
+    color: white;
+    }
+    div {
+    text-align: center;
+    font-family: Aclonica;
+    color: white;
+    }
+    </style>
 </head>
 <body>
 
