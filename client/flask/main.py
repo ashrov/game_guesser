@@ -12,11 +12,16 @@ result_games = []
 
 
 @app.route('/', methods=['GET'])
+def start_page():
+    return render_template('main.html')
+
+
+@app.route('/index.html', methods=['GET'])
 def get_index():
     return render_template("index.html", values=tags)
 
 
-@app.route('/', methods=['POST'])
+@app.route('/index.html', methods=['POST'])
 def post_index():
     chosen_tags = request.form.getlist('checkbox[]')
     message = {'intent': 'get_by_tags',
