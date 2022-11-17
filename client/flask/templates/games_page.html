@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% for game in games %}
+    <a href={{game["steam_url"]}}>{{game['game_name']}}</a>
+    {% endfor %}
+</head>
+<body>
+
+</body>
+</html>
