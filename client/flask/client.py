@@ -3,6 +3,13 @@ import logging
 import socket
 import config_network
 
+
+CONSOLE_HELP_MESSAGE = "start - начать угадывать\n" \
+                       "answer [yes/no/dn] - ответить на тэг да/нет/не знаю\n" \
+                       "get_current_games - получить подходящие игры\n" \
+                       "get_same_game - получить не полностью подходящие игры (нужно, если нет полностью подходящих)\n"
+
+
 logging.basicConfig(level=logging.INFO)
 socket_buffer_size = 1024
 
@@ -50,6 +57,7 @@ class ConsoleClient:
         self.start()
 
     def start(self):
+        print()
         while cmd := input():
             if cmd.startswith('answer'):
                 intent, answer = cmd.split()
