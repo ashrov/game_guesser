@@ -5,21 +5,13 @@ from typing import Iterable
 class Tag:
     def __init__(self, name="", question="", tag_id=-1, usage_count=0):
         self.id = tag_id
-        self._name = name
-        self._question = question
+        self.name = name
+        self.question = question
         self.usage_count = usage_count
 
     def from_db_row(self, row: Iterable):
-        self.id, self._name, self._question, self.usage_count = row
+        self.id, self.name, self.question, self.usage_count = row
         return self
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @property
-    def question(self) -> str:
-        return self._question
 
     def __eq__(self, other) -> bool:
         if isinstance(other, type(self)):
@@ -31,7 +23,7 @@ class Tag:
             raise TypeError
 
     def __str__(self) -> str:
-        return f"Tag: {self._name}; Question: {self._question}"
+        return f"Tag: {self.name}; Question: {self.question}"
 
     def __lt__(self, other) -> bool:
         return self.usage_count < other.usage_count
