@@ -15,10 +15,10 @@ socket_buffer_size = 1024
 
 
 def get_server_address():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    s.connect(('<broadcast>', 0))
-    host = s.getsockname()[0]
+    # s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    # s.connect(('<broadcast>', 0))
+    # host = s.getsockname()[0]
     return "localhost", config_network.SERVER_PORT
 
 

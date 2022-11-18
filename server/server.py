@@ -131,10 +131,10 @@ class MainServer:
 
     @staticmethod
     def get_server_address():
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        s.connect(('<broadcast>', 0))
-        host = s.getsockname()[0]
+        # s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        # s.connect(('<broadcast>', 0))
+        # host = s.getsockname()[0]
         return "0.0.0.0", SERVER_PORT
 
 
