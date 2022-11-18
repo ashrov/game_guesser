@@ -57,7 +57,7 @@ class ConsoleClient:
         self.start()
 
     def start(self):
-        print()
+        print(CONSOLE_HELP_MESSAGE)
         while cmd := input():
             if cmd.startswith('answer'):
                 intent, answer = cmd.split()
