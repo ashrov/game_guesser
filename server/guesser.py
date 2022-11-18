@@ -48,11 +48,7 @@ class Guesser:
 
     def get_new_tag(self, user: User) -> Tag:
         remaining_tags = set(self.db.get_all_tags()) - set(user.used_tags)
-
         remaining_tags = sorted(list(remaining_tags))
-        chances = []
-        for i in range(len(remaining_tags)):
-            chances += [i] * (i+1)
 
-        n = random.choice(chances)
-        return remaining_tags[n]
+        weights = [tag.usage_count for tag in remaining_tags]
+        return random.choices(remaining_tags, weights=weights)[0]
