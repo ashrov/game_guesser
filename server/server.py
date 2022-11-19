@@ -3,10 +3,10 @@ import socket
 from threading import Thread
 import logging
 
-from config import GAME_SELECTION_SIZE
-from utils import Tag, Game, User, CustomJSONEncoder
+from config import GAME_SELECTION_SIZE, SERVER_PORT
+from gamesdb import Tag, Game, User, CustomJSONEncoder
 from guesser import Guesser
-from config import SERVER_PORT
+
 
 logging.basicConfig(level=logging.INFO)
 

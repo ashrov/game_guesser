@@ -1,5 +1,6 @@
-from database import DataBase
-from utils import Game, Tag, User
+from gamesdb import DataBase
+from gamesdb import Game, Tag, User
+
 
 import random
 
