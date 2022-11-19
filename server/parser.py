@@ -2,8 +2,8 @@ from time import sleep
 from bs4 import BeautifulSoup
 import requests
 
-from server.gamesdb.utils import Game
-from server.gamesdb.database import DataBase
+from gamesdb.utils import Game
+from gamesdb.database import DataBase
 
 
 MAIN_URL = "https://store.steampowered.com/search/?category1=998&page={page_number}"

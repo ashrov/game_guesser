@@ -1,9 +1,11 @@
 import logging
+import os
 from sqlite3 import Connection, Cursor, connect, IntegrityError
 
 from .utils import Game, Tag
 
 
+DB_NAME = "/database.db"
 DB_TABLES = {
     "games": ("id INTEGER PRIMARY KEY",
               "game_name TEXT UNIQUE",
@@ -22,10 +24,11 @@ class DataBase:
     _connection: Connection
     _cursor: Cursor
 
-    def __init__(self, path="database.db"):
+    def __init__(self):
+        self._path = os.path.abspath(os.path.dirname(__file__) + DB_NAME)
+        print(self._path)
         self._connect()
         self._create_tables()
-        self._path = path
 
     def _create_tables(self):
         for table_name, columns in DB_TABLES.items():
