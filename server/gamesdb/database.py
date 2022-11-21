@@ -1,11 +1,11 @@
 import logging
-import sqlite3
-from sqlite3 import Connection, Cursor, connect
+import os
+from sqlite3 import Connection, Cursor, connect, IntegrityError
 
-from utils import Game, Tag
-from config import DATABASE_PATH
+from .utils import Game, Tag
 
 
+DB_NAME = "/database.db"
 DB_TABLES = {
     "games": ("id INTEGER PRIMARY KEY",
               "game_name TEXT UNIQUE",
@@ -25,6 +25,8 @@ class DataBase:
     _cursor: Cursor
 
     def __init__(self):
+        self._path = os.path.abspath(os.path.dirname(__file__) + DB_NAME)
+        print(self._path)
         self._connect()
         self._create_tables()
 
@@ -41,11 +43,11 @@ class DataBase:
 
     def _connect(self):
         try:
-            self._connection = connect(DATABASE_PATH)
+            self._connection = connect(self._path)
         except Exception as er:
-            logging.error(f"unable to connect to {DATABASE_PATH}. {er}")
+            logging.error(f"unable to connect to {self._path}. {er}")
         else:
-            logging.debug(f"{DATABASE_PATH} connected")
+            logging.debug(f"{self._path} connected")
             self._cursor = self._connection.cursor()
 
     def execute(self, sql):
@@ -63,7 +65,7 @@ class DataBase:
     def disconnect(self):
         self._cursor.close()
         self._connection.close()
-        logging.debug(f"{DATABASE_PATH} disconnected")
+        logging.debug(f"{self._path} disconnected")
 
     def delete_games(self):
         sqls = ("delete from games",
@@ -78,7 +80,7 @@ class DataBase:
         sql = "insert into games (game_name, steam_url, reviews_count) values (?, ?, ?)"
         try:
             self._cursor.execute(sql, (game.name, game.steam_url, game.reviews_count))
-        except sqlite3.IntegrityError:
+        except IntegrityError:
             print("repeated game")
             return 0
         else:
@@ -139,7 +141,7 @@ class DataBase:
         sql = f"insert into tags (tag_name) values (?)"
         try:
             self._cursor.execute(sql, (tag_name,))
-        except sqlite3.IntegrityError:
+        except IntegrityError:
             pass
 
     def increment_usage(self, tag):

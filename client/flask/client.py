@@ -14,18 +14,10 @@ logging.basicConfig(level=logging.INFO)
 socket_buffer_size = 1024
 
 
-def get_server_address():
-    # s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    # s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    # s.connect(('<broadcast>', 0))
-    # host = s.getsockname()[0]
-    return "localhost", config_network.SERVER_PORT
-
-
 class Client:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_addr = get_server_address()
+        server_addr = ("localhost", config_network.SERVER_PORT)
         logging.info(f"trying to connect to {server_addr}")
         self.client.connect(server_addr)
         logging.info(f"connected to {server_addr}")
@@ -50,14 +42,14 @@ class Client:
 class ConsoleClient:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_addr = get_server_address()
+        server_addr = ("localhost", config_network.SERVER_PORT)
         logging.info(f"trying to connect to {server_addr}")
         self.client.connect(server_addr)
         logging.info(f"connected to {server_addr}")
         self.start()
 
     def start(self):
-        print()
+        print(CONSOLE_HELP_MESSAGE)
         while cmd := input():
             if cmd.startswith('answer'):
                 intent, answer = cmd.split()
@@ -72,9 +64,9 @@ class ConsoleClient:
 
     def get_response(self):
         message = ""
-        response_len = 4096
-        while response_len == 4096:
-            response = self.client.recv(4096)
+        response_len = socket_buffer_size
+        while response_len == socket_buffer_size:
+            response = self.client.recv(socket_buffer_size)
             message += response.decode('utf-8')
             response_len = len(response)
         return message

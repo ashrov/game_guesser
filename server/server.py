@@ -1,12 +1,11 @@
 import json
+import logging
 import socket
 from threading import Thread
-import logging
 
-from config import GAME_SELECTION_SIZE
-from utils import Tag, Game, User, CustomJSONEncoder
+from config import GAME_SELECTION_SIZE, SERVER_PORT
+from gamesdb import Tag, Game, User, CustomJSONEncoder
 from guesser import Guesser
-from config import SERVER_PORT
 
 logging.basicConfig(level=logging.INFO)
 
@@ -45,6 +44,8 @@ class ClientThread:
                 self.connection.send(response.encode('utf-8'))
         except ConnectionResetError:
             logging.info(f"Connection reset by client {self.address}")
+        except Exception as er:
+            logging.info(f"Exception at connection with {self.address}. Error: {er}")
         self._close()
         logging.info(f"Connection with {self.address} closed.")
 
@@ -109,7 +110,7 @@ class MainServer:
         self._clients = dict()
         self._clint_threads = []
         self.server = socket.socket()
-        addr = self.get_server_address()
+        addr = ("localhost", SERVER_PORT)
         logging.info(f"starting server at {addr}")
         self.server.bind(addr)
         logging.info("listening")
@@ -128,14 +129,6 @@ class MainServer:
             client_thread = Thread(target=ClientThread, args=(self.server, user))
             self._clint_threads.append(client_thread)
             client_thread.start()
-
-    @staticmethod
-    def get_server_address():
-        # s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        # s.connect(('<broadcast>', 0))
-        # host = s.getsockname()[0]
-        return "0.0.0.0", SERVER_PORT
 
 
 if __name__ == "__main__":
