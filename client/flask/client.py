@@ -7,7 +7,7 @@ import config_network
 CONSOLE_HELP_MESSAGE = "start - начать угадывать\n" \
                        "answer [yes/no/dn] - ответить на тэг да/нет/не знаю\n" \
                        "get_current_games - получить подходящие игры\n" \
-                       "get_same_game - получить не полностью подходящие игры (нужно, если нет полностью подходящих)\n"
+                       "get_same_games - получить не полностью подходящие игры (нужно, если нет полностью подходящих)\n"
 
 
 logging.basicConfig(level=logging.INFO)
