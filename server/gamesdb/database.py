@@ -132,8 +132,8 @@ class DataBase:
             return []
 
         sql = "select id, tag_name, question, usage_count from game_to_tag " \
-              "join tags on game_to_tag.tag_id = tags.id where game_id in " \
-              "(select game_id from game_to_tag where tag_id = ? and question is not null)"
+              "join tags on game_to_tag.tag_id = tags.id and question is not null where game_id in " \
+              "(select game_id from game_to_tag where tag_id = ?)"
         self._cursor.execute(sql, (tag.id, ))
         return [Tag().from_db_row(row) for row in self._cursor.fetchall()]
 
