@@ -25,7 +25,7 @@ class Win2(QtWidgets.QWidget):
 
     def change_text(self):
         global count
-        self.ui.label_2.setGeometry(QtCore.QRect(210, 130, 15 * len(questions[count]), 231))
+        self.ui.label_2.setGeometry(QtCore.QRect(340, 130, 211, 91))
         if questions[count]:
             self.ui.label_2.setText(questions[count])
         count += 1

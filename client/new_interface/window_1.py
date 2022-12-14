@@ -47,7 +47,7 @@ class UiWindow1(object):
         self.label_3.setMouseTracking(False)
         self.label_3.setTabletTracking(False)
         self.label_3.setStyleSheet("QLabel{\n"
-"font: 28pt \"Impact\";\n"
+"font: 23pt \"Impact\";\n"
 "    color: white;\n"
 "    text-align: center\n"
 "}")
