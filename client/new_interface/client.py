@@ -38,6 +38,22 @@ class Client:
 
         return message
 
+    def start_guessing(self):
+        message = {"intent": "start"}
+        return self.send_message(message)
+
+    def answer(self, answer: str):
+        message = {"intent": "answer", "answer": answer}
+        return self.send_message(message)
+
+    def get_current_games(self):
+        message = {"intent": "get_current_games"}
+        return self.send_message(message)
+
+    def get_same_games(self):
+        message = {"intent": "get_same_games"}
+        return self.send_message(message)
+
 
 class ConsoleClient:
     def __init__(self):
