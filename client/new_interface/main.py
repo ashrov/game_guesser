@@ -14,18 +14,19 @@ questions = [question["question"] for question in tags]
 count = 0
 
 
-class Win2(QtWidgets.QWidget):
+class Win2(QtWidgets.QMainWindow):
     def __init__(self):
         super(Win2, self).__init__()
         self.ui = UiWindow2()
         self.ui.setupUi(self)
+        self.ui.pushButton1.clicked.connect(self.change_text)
         self.ui.pushButton_2.clicked.connect(self.change_text)
-        self.ui.pushButton.clicked.connect(self.change_text)
+        self.ui.pushButton_4.clicked.connect(self.change_text)
+
 
 
     def change_text(self):
         global count
-        self.ui.label_2.setGeometry(QtCore.QRect(340, 130, 211, 91))
         if questions[count]:
             self.ui.label_2.setText(questions[count])
         count += 1
