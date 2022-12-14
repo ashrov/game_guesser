@@ -121,7 +121,7 @@ class Game:
 
 
 class User:
-    current_tag: Tag
+    current_tag: Tag | None
     current_games: list[Game]
 
     def __init__(self, connection, address):

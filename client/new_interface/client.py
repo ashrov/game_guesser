@@ -25,7 +25,6 @@ class Client:
     def send_message(self, js: dict) -> dict:
         self.client.send(json.dumps(js).encode('utf-8'))
         response = self.get_response()
-        print(response)
         return json.loads(response)
 
     def get_response(self):
