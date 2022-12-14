@@ -123,7 +123,7 @@ class DataBase:
         return Tag().from_db_row(self._cursor.fetchone())
 
     def get_all_tags(self) -> list[Tag]:
-        sql = "select * from tags"
+        sql = "select * from tags where question is not null"
         self._cursor.execute(sql)
         return [Tag().from_db_row(line) for line in self._cursor.fetchall()]
 
