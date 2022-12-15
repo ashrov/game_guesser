@@ -14,15 +14,10 @@ class Win3(QtWidgets.QMainWindow):
         super(Win3, self).__init__()
         self.ui = UiWindow3()
         self.ui.setupUi(self)
-        #self.win_2 = Win2()
-        self.ui.pushButton.clicked.connect(self.swicth_window)
         self.ui.listWidget.itemClicked.connect(self.handle_clicked_item)
+        self.ui.pushButton.clicked.connect(self.swicth_window)
 
         self.client = client
-
-    def swicth_window(self):
-        self.hide()
-        self.win_2.show()
 
     def fill_games_list(self):
         self.ui.listWidget.clear()
@@ -42,7 +37,10 @@ class Win3(QtWidgets.QMainWindow):
     def handle_clicked_item(self, item: QtWidgets.QListWidgetItem):
         open(item.data(1))
 
-
+    def swicth_window(self):
+        self.win_2 = Win2()
+        self.close()
+        self.win_2.show()
 
 
 class Win2(QtWidgets.QMainWindow):
