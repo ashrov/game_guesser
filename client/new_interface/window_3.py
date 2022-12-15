@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\games_page.ui'
+# Form implementation generated from reading ui file '/Users/sliwmen/Downloads/games_page.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -18,7 +18,7 @@ class UiWindow3(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(0, 0, 900, 600))
+        self.label.setGeometry(QtCore.QRect(0, 0, 911, 691))
         self.label.setText("")
         self.label.setPixmap(QtGui.QPixmap("images/sppr_win_main_without_text.png"))
         self.label.setScaledContents(True)
@@ -37,6 +37,15 @@ class UiWindow3(object):
 "}")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(20, 540, 131, 41))
+        self.pushButton.setStyleSheet("QPushButton\n"
+"{\n"
+"    background-color: white;\n"
+"    border-radius: 10px;    \n"
+"    font: 75 12pt \"Terminal\";\n"
+"}")
+        self.pushButton.setObjectName("pushButton")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -47,7 +56,9 @@ class UiWindow3(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         __sortingEnabled = self.listWidget.isSortingEnabled()
         self.listWidget.setSortingEnabled(False)
+        self.listWidget.setSortingEnabled(__sortingEnabled)
         self.label_2.setText(_translate("MainWindow", "Here are the games I could find"))
+        self.pushButton.setText(_translate("MainWindow", "Back"))
 
 
 if __name__ == "__main__":

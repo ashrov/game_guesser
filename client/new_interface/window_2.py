@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\questions_page.ui'
+# Form implementation generated from reading ui file '/Users/sliwmen/Downloads/questions_page-2.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -30,13 +30,13 @@ class UiWindow2(object):
 "    background-color: white;\n"
 "    border-radius: 20px;\n"
 "    font: 10pt \"Times New Roman\";\n"
-"     font-weight: bold;"
+"    font-weight: bold;\n"
 "}")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
-        self.pushButton1 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton1.setGeometry(QtCore.QRect(200, 440, 130, 40))
-        self.pushButton1.setStyleSheet("QPushButton{\n"
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(200, 440, 130, 40))
+        self.pushButton.setStyleSheet("QPushButton{\n"
 "    \n"
 "    \n"
 "    font: 12pt \"Terminal\";\n"
@@ -44,7 +44,7 @@ class UiWindow2(object):
 "    border-radius: 10px;\n"
 "\n"
 "}")
-        self.pushButton1.setObjectName("pushButton")
+        self.pushButton.setObjectName("pushButton")
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_2.setGeometry(QtCore.QRect(560, 440, 130, 40))
         self.pushButton_2.setStyleSheet("QPushButton{\n"
@@ -65,12 +65,12 @@ class UiWindow2(object):
 "    border-radius: 10px;\n"
 "}")
         self.pushButton_3.setObjectName("pushButton_3")
-        # self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        # self.label_3.setGeometry(QtCore.QRect(-70, 170, 421, 441))
-        # self.label_3.setText("")
-        # self.label_3.setPixmap(QtGui.QPixmap("images/human.png"))
-        # self.label_3.setScaledContents(True)
-        # self.label_3.setObjectName("label_3")
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setGeometry(QtCore.QRect(-10, -40, 281, 321))
+        self.label_3.setText("")
+        self.label_3.setPixmap(QtGui.QPixmap("images/human.png"))
+        self.label_3.setScaledContents(True)
+        self.label_3.setObjectName("label_3")
         self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_4.setGeometry(QtCore.QRect(380, 490, 130, 40))
         self.pushButton_4.setStyleSheet("QPushButton{\n"
@@ -91,6 +91,16 @@ class UiWindow2(object):
         self.label_4.setScaledContents(True)
         self.label_4.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.label_4.setObjectName("label_4")
+        self.pushButton_5 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_5.setGeometry(QtCore.QRect(760, 110, 130, 40))
+        self.pushButton_5.setStyleSheet("QPushButton{\n"
+"    \n"
+"    \n"
+"    font: 12pt \"Terminal\";\n"
+"    background-color: white;\n"
+"    border-radius: 10px;\n"
+"}")
+        self.pushButton_5.setObjectName("pushButton_5")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -100,11 +110,12 @@ class UiWindow2(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label_2.setText(_translate("MainWindow", "Question"))
-        self.pushButton1.setText(_translate("MainWindow", "Yes"))
+        self.pushButton.setText(_translate("MainWindow", "Yes"))
         self.pushButton_2.setText(_translate("MainWindow", "No"))
         self.pushButton_3.setText(_translate("MainWindow", "Get games"))
         self.pushButton_4.setText(_translate("MainWindow", "Don\'t know"))
         self.label_4.setText(_translate("MainWindow", "Games found:"))
+        self.pushButton_5.setText(_translate("MainWindow", "Restart"))
 
 
 if __name__ == "__main__":
