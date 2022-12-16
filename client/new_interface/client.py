@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 socket_buffer_size = 1024
 
 
-class Client:
+class BasicClient:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_addr = ("localhost", config_network.SERVER_PORT)
@@ -22,12 +22,12 @@ class Client:
         self.client.connect(server_addr)
         logging.info(f"connected to {server_addr}")
 
-    def send_message(self, js: dict) -> dict:
-        self.client.send(json.dumps(js).encode('utf-8'))
-        response = self.get_response()
+    def send_message(self, message: dict) -> dict:
+        self.client.send(json.dumps(message).encode('utf-8'))
+        response = self._get_response()
         return json.loads(response)
 
-    def get_response(self):
+    def _get_response(self):
         message = ""
         response_len = socket_buffer_size
         while response_len == socket_buffer_size:
@@ -37,6 +37,8 @@ class Client:
 
         return message
 
+
+class Client(BasicClient):
     def start_guessing(self):
         message = {"intent": "start"}
         return self.send_message(message)
@@ -54,15 +56,7 @@ class Client:
         return self.send_message(message)
 
 
-class ConsoleClient:
-    def __init__(self):
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_addr = ("localhost", config_network.SERVER_PORT)
-        logging.info(f"trying to connect to {server_addr}")
-        self.client.connect(server_addr)
-        logging.info(f"connected to {server_addr}")
-        self.start()
-
+class ConsoleClient(BasicClient):
     def start(self):
         print(CONSOLE_HELP_MESSAGE)
         while cmd := input():
@@ -72,20 +66,13 @@ class ConsoleClient:
             else:
                 message = json.dumps({'intent': cmd})
             self.client.send(message.encode('utf-8'))
-            response = self.get_response()
+
+            response = self._get_response()
             if not response:
                 break
             print(response)
 
-    def get_response(self):
-        message = ""
-        response_len = socket_buffer_size
-        while response_len == socket_buffer_size:
-            response = self.client.recv(socket_buffer_size)
-            message += response.decode('utf-8')
-            response_len = len(response)
-        return message
-
 
 if __name__ == "__main__":
     client = ConsoleClient()
+    client.start()

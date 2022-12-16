@@ -45,7 +45,7 @@ class ClientThread:
         except ConnectionResetError:
             logging.info(f"Connection reset by client {self.address}")
         except Exception as er:
-            logging.info(f"Exception at connection with {self.address}. Error: {er}")
+            logging.exception(f"Exception at connection with {self.address}. Error: {er}")
         self._close()
         logging.info(f"Connection with {self.address} closed.")
 

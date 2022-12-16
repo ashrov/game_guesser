@@ -30,7 +30,7 @@ class Guesser:
         return good_games - bad_games
 
     def select_good_games(self, tags: list[Tag]) -> set[Game]:
-        ans = set(self.db.get_all_games())
+        ans = set(self.db.all_games)
         for tag in tags:
             temp = self.db.get_games_with_tag(tag)
             ans = set(temp) & ans
@@ -48,8 +48,8 @@ class Guesser:
         return ans
 
     def get_new_tag(self, user: User) -> Tag:
-        remaining_tags = set(self.db.get_all_tags()) - set(user.used_tags)
-        remaining_tags = sorted(list(remaining_tags))
+        remaining_tags = self.db.get_possible_tags(user)
+        remaining_tags.sort()
 
         weights = [tag.usage_count for tag in remaining_tags]
         return random.choices(remaining_tags, weights=weights)[0]

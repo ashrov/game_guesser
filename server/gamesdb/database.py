@@ -2,7 +2,7 @@ import logging
 import os
 from sqlite3 import Connection, Cursor, connect, IntegrityError
 
-from .utils import Game, Tag
+from .utils import Game, Tag, User
 
 
 DB_NAME = "/database.db"
@@ -26,9 +26,18 @@ class DataBase:
 
     def __init__(self):
         self._path = os.path.abspath(os.path.dirname(__file__) + DB_NAME)
-        print(self._path)
         self._connect()
         self._create_tables()
+        self._all_tags = self.get_all_tags()
+        self._all_games = self.get_all_games()
+
+    @property
+    def all_tags(self):
+        return self._all_tags
+
+    @property
+    def all_games(self):
+        return self._all_games
 
     def _create_tables(self):
         for table_name, columns in DB_TABLES.items():
@@ -127,15 +136,21 @@ class DataBase:
         self._cursor.execute(sql)
         return [Tag().from_db_row(line) for line in self._cursor.fetchall()]
 
-    def get_possible_tags(self, tag: Tag) -> list[Tag]:
-        if not tag:
-            return []
+    def get_possible_tags(self, user: User) -> list[Tag]:
+        if not user.used_tags or not user.current_games:
+            return self.all_tags
 
-        sql = "select id, tag_name, question, usage_count from game_to_tag " \
-              "join tags on game_to_tag.tag_id = tags.id and question is not null where game_id in " \
-              "(select game_id from game_to_tag where tag_id = ?)"
-        self._cursor.execute(sql, (tag.id, ))
-        return [Tag().from_db_row(row) for row in self._cursor.fetchall()]
+        possible_tags = set()
+        for game in user.current_games:
+            possible_tags |= set(self._get_game_tags(game.id))
+
+        return list(possible_tags)
+
+    def _get_adjacent_tags(self, game):
+        sql = "select * from tags where id in " \
+              "(select tag_id from game_to_tag where game_id = ?)"
+        self._cursor.execute(sql, (game.id, ))
+        return {Tag().from_db_row(row) for row in self._cursor.fetchall()}
 
     def _add_tag(self, tag_name: str):
         sql = f"insert into tags (tag_name) values (?)"
