@@ -10,14 +10,15 @@ from window_3 import UiWindow3
 
 
 class Win3(QtWidgets.QMainWindow):
-    def __init__(self, client: Client):
+    def __init__(self, client: Client, parent_window):
         super(Win3, self).__init__()
         self.ui = UiWindow3()
         self.ui.setupUi(self)
         self.ui.listWidget.itemClicked.connect(self.handle_clicked_item)
-        self.ui.pushButton.clicked.connect(self.swicth_window)
+        self.ui.pushButton.clicked.connect(self.back)
 
         self.client = client
+        self.parent_window = parent_window
 
     def fill_games_list(self):
         self.ui.listWidget.clear()
@@ -37,10 +38,9 @@ class Win3(QtWidgets.QMainWindow):
     def handle_clicked_item(self, item: QtWidgets.QListWidgetItem):
         open(item.data(1))
 
-    def swicth_window(self):
-        self.win_2 = Win2()
+    def back(self):
         self.close()
-        self.win_2.show()
+        self.parent_window.show()
 
 
 class Win2(QtWidgets.QMainWindow):
@@ -48,22 +48,18 @@ class Win2(QtWidgets.QMainWindow):
         super(Win2, self).__init__()
         self.ui = UiWindow2()
         self.ui.setupUi(self)
+
+        self.client = Client()
+        self.win_3 = Win3(self.client, self)
+
         self.ui.pushButton.clicked.connect(lambda: self.handle_answer("yes"))
         self.ui.pushButton_2.clicked.connect(lambda: self.handle_answer("no"))
         self.ui.pushButton_4.clicked.connect(lambda: self.handle_answer("dn"))
-        self.ui.pushButton_3.clicked.connect(self.switch_window)
+        self.ui.pushButton_3.clicked.connect(self.get_games)
         self.ui.pushButton_5.clicked.connect(self.restart)
-        self.client = Client()
 
         self.response = self.client.start_guessing()
         self.ui.label_2.setText(self.response["new_tag"]["question"])
-
-        self.win_3 = Win3(self.client)
-
-    def switch_window(self):
-        self.hide()
-
-        self.win_3.show()
 
     def handle_answer(self, answer):
         response = self.client.answer(answer)
@@ -71,13 +67,13 @@ class Win2(QtWidgets.QMainWindow):
         self.ui.label_4.setText(f"Games count: {response['games_count']}")
 
     def get_games(self):
-        self.switch_window()
+        self.hide()
+        self.win_3.show()
 
     def restart(self):
         self.response = self.client.start_guessing()
         self.ui.label_2.setText(self.response["new_tag"]["question"])
-        self.ui.label_4.setText("0")
-        self.win_3 = Win3(self.client)
+        self.ui.label_4.setText("Games count: 0")
 
 
 class Win1(QtWidgets.QMainWindow):
