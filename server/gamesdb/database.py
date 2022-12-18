@@ -145,12 +145,14 @@ class DataBase:
             for game in user.current_games:
                 possible_tags |= set(self._get_game_tags(game.id))
         else:
-            possible_tags = set(self.all_tags) - set(user.used_tags)
+            possible_tags = set(self.all_tags)
+
+        possible_tags -= set(user.used_tags)
 
         return list(possible_tags)
 
-    def _get_adjacent_tags(self, game):
-        sql = "select * from tags where id in " \
+    def _get_adjacent_tags(self, game) -> set[Tag]:
+        sql = "select * from tags where question not null and id in " \
               "(select tag_id from game_to_tag where game_id = ?)"
         self._cursor.execute(sql, (game.id, ))
         return {Tag().from_db_row(row) for row in self._cursor.fetchall()}
