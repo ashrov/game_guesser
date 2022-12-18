@@ -73,7 +73,7 @@ class Win2(QtWidgets.QMainWindow):
     def restart(self):
         self.response = self.client.start_guessing()
         self.ui.label_2.setText(self.response["new_tag"]["question"])
-        self.ui.label_4.setText("Games count: 0")
+        self.ui.label_4.setText("Games count: ...")
 
 
 class Win1(QtWidgets.QMainWindow):

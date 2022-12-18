@@ -114,7 +114,7 @@ class UiWindow2(object):
         self.pushButton_2.setText(_translate("MainWindow", "No"))
         self.pushButton_3.setText(_translate("MainWindow", "Get games"))
         self.pushButton_4.setText(_translate("MainWindow", "Don\'t know"))
-        self.label_4.setText(_translate("MainWindow", "Games found:"))
+        self.label_4.setText(_translate("MainWindow", "Games count: ..."))
         self.pushButton_5.setText(_translate("MainWindow", "Restart"))
 
 
