@@ -136,13 +136,16 @@ class DataBase:
         self._cursor.execute(sql)
         return [Tag().from_db_row(line) for line in self._cursor.fetchall()]
 
-    def get_possible_tags(self, user: User) -> list[Tag]:
+    def get_possible_tags(self, user: User, games_threshold=100) -> list[Tag]:
         if not user.used_tags or not user.current_games:
             return self.all_tags
 
         possible_tags = set()
-        for game in user.current_games:
-            possible_tags |= set(self._get_game_tags(game.id))
+        if len(user.current_games) <= games_threshold:
+            for game in user.current_games:
+                possible_tags |= set(self._get_game_tags(game.id))
+        else:
+            possible_tags = set(self.all_tags) - set(user.used_tags)
 
         return list(possible_tags)
 

@@ -3,7 +3,7 @@ import logging
 import socket
 from threading import Thread
 
-from config import GAME_SELECTION_SIZE, SERVER_PORT
+from config import SAME_GAME_SELECTION_SIZE, SERVER_PORT
 from gamesdb import Tag, Game, User, CustomJSONEncoder
 from guesser import Guesser
 
@@ -61,7 +61,7 @@ class ClientThread:
             case "get_current_games":
                 response = {CURRENT_GAMES: self.user.current_games}
             case "get_same_games":
-                response = {SAME_GAMES: self.guesser.guess_game(self.user, selection_size=GAME_SELECTION_SIZE)}
+                response = {SAME_GAMES: self.guesser.guess_game(self.user, selection_size=SAME_GAME_SELECTION_SIZE)}
             case "get_all_tags":
                 tags = sorted(self.guesser.db.get_all_tags(), reverse=True)
                 response = {ALL_TAGS: tags}
