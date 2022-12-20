@@ -122,7 +122,7 @@ class MainServer:
     def __init__(self):
         self._clint_threads = []
         self.server = socket.socket()
-        addr = ("localhost", SERVER_PORT)
+        addr = ("0.0.0.0", SERVER_PORT)
         logger.info(f"starting server at {addr}")
         self.server.bind(addr)
         logger.info("listening")

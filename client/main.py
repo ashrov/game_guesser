@@ -106,6 +106,7 @@ class Win2(QtWidgets.QMainWindow):
         if button == QtWidgets.QMessageBox.Yes:
             self.restart()
 
+
 class Win1(QtWidgets.QMainWindow):
     def __init__(self):
         super(Win1, self).__init__()

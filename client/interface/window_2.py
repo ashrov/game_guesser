@@ -29,17 +29,18 @@ class UiWindow2(object):
 "    text-align: center;\n"
 "    background-color: white;\n"
 "    border-radius: 20px;\n"
-"    font: 10pt \"Times New Roman\";\n"
+"    font: 14pt \"Times New Roman\";\n"
 "    font-weight: bold;\n"
 "}")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
+        self.label_2.setWordWrap(True)
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(200, 440, 130, 40))
         self.pushButton.setStyleSheet("QPushButton{\n"
 "    \n"
 "    \n"
-"    font: 12pt \"Terminal\";\n"
+"    font: 14pt \"Terminal\";\n"
 "    background-color: white;\n"
 "    border-radius: 10px;\n"
 "\n"
@@ -50,7 +51,7 @@ class UiWindow2(object):
         self.pushButton_2.setStyleSheet("QPushButton{\n"
 "    \n"
 "    \n"
-"    font: 12pt \"Terminal\";\n"
+"    font: 14pt \"Terminal\";\n"
 "    background-color: white;\n"
 "    border-radius: 10px;\n"
 "}")
@@ -60,7 +61,7 @@ class UiWindow2(object):
         self.pushButton_3.setStyleSheet("QPushButton{\n"
 "    \n"
 "    \n"
-"    font: 12pt \"Terminal\";\n"
+"    font: 14pt \"Terminal\";\n"
 "    background-color: white;\n"
 "    border-radius: 10px;\n"
 "}")
@@ -76,7 +77,7 @@ class UiWindow2(object):
         self.pushButton_4.setStyleSheet("QPushButton{\n"
 "    \n"
 "    \n"
-"    font: 12pt \"Terminal\";\n"
+"    font: 14pt \"Terminal\";\n"
 "    background-color: white;\n"
 "    border-radius: 10px;\n"
 "}")
@@ -96,7 +97,7 @@ class UiWindow2(object):
         self.pushButton_5.setStyleSheet("QPushButton{\n"
 "    \n"
 "    \n"
-"    font: 12pt \"Terminal\";\n"
+"    font: 14pt \"Terminal\";\n"
 "    background-color: white;\n"
 "    border-radius: 10px;\n"
 "}")

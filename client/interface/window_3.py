@@ -25,15 +25,15 @@ class UiWindow3(object):
         self.label.setObjectName("label")
         self.listWidget = QtWidgets.QListWidget(self.centralwidget)
         self.listWidget.setGeometry(QtCore.QRect(220, 220, 431, 291))
-        self.listWidget.setStyleSheet("font: 12pt \"Terminal\";")
+        self.listWidget.setStyleSheet("font: 14pt \"Times New Roman\";")
         self.listWidget.setObjectName("listWidget")
+        self.listWidget.setWordWrap(True)
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(250, 60, 361, 91))
         self.label_2.setStyleSheet("QLabel{\n"
 "    background-color: white;\n"
 "    border-radius: 20px;\n"
-"    \n"
-"    font: 75 12pt \"Terminal\";\n"
+"    font: 75 14pt \"Terminal\";\n"
 "}")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
@@ -43,7 +43,7 @@ class UiWindow3(object):
 "{\n"
 "    background-color: white;\n"
 "    border-radius: 10px;    \n"
-"    font: 75 12pt \"Terminal\";\n"
+"    font: 75 14pt \"Terminal\";\n"
 "}")
         self.pushButton.setObjectName("pushButton")
         MainWindow.setCentralWidget(self.centralwidget)

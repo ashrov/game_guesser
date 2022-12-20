@@ -51,7 +51,7 @@ class Guesser:
         weights = [tag.usage_count for tag in remaining_tags]
         return random.choices(remaining_tags, weights=weights)[0]
 
-    def _get_possible_tags(self, user: User, games_threshold=100) -> set[Tag]:
+    def _get_possible_tags(self, user: User, games_threshold=50) -> set[Tag]:
         if not (1 < len(user.current_games) <= games_threshold):
             return self.db.all_tags - set(user.used_tags)
 

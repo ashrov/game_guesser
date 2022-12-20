@@ -31,10 +31,8 @@ class UiWindow1(object):
         self.label_2.setObjectName("label_2")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(400, 400, 91, 41))
-        self.pushButton.setStyleSheet("font: 12pt;\n"
-"font: 75 12pt;")
+        self.pushButton.setStyleSheet("font: 14pt \"Terminal\";")
         self.pushButton.setObjectName("pushButton")
-        self.pushButton.clicked.connect
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
         self.label_3.setGeometry(QtCore.QRect(210, 130, 871, 231))
         font = QtGui.QFont()
