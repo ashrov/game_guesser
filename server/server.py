@@ -37,7 +37,6 @@ def func_time(func):
     return _wrapper
 
 
-
 class ClientThread:
     def __init__(self, user: User):
         self.user = user
@@ -76,8 +75,7 @@ class ClientThread:
             case "answer":
                 response = self.handle_question_answer(json_message.get(ANSWER))
             case "start":
-                self.user.reset_tags()
-                response = {NEW_TAG: self.get_next_tag()}
+                response = self.start()
             case "get_current_games":
                 response = {CURRENT_GAMES: self.user.current_games}
             case "get_same_games":
@@ -88,6 +86,11 @@ class ClientThread:
         response_str = json.dumps(response, cls=CustomJSONEncoder)
         logger.debug(f"returning response {response_str}")
         return response_str
+
+    def start(self):
+        self.user.reset_tags()
+        self.user.current_games = self.guesser.db.all_games
+        return {NEW_TAG: self.get_next_tag()}
 
     def get_next_tag(self) -> Tag:
         new_tag = self.guesser.get_new_tag(self.user)
@@ -105,7 +108,8 @@ class ClientThread:
             case _:
                 return {ERROR: "bad answer result"}
 
-        self.user.current_games = self.guesser.guess_game(self.user)
+        if self.user.current_games:
+            self.user.current_games = self.guesser.guess_game(self.user)
         data = {NEW_TAG: self.get_next_tag(),
                 GAMES_COUNT: len(self.user.current_games)}
         return data

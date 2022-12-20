@@ -1,6 +1,3 @@
-import os
-
-
 SERVER_PORT = 36543
 
 SAME_GAME_SELECTION_SIZE = 5
