@@ -65,12 +65,10 @@ def parse_main_page(page: int, db: ParserDataBase) -> int:
     for game_url in games_urls:
         print(f"parsing {game_url}")
         game = get_game_from_game_url(game_url)
-        if game:
-            adding_result = db.add_game(game)
-            games_count += adding_result
-            if adding_result:
-                print(f"Game added ({game.name})\n"
-                      f"Page: {page}. Games on page: {games_count}\n")
+        if game and db.add_game(game):
+            games_count += 1
+            print(f"Game added ({game.name})\n"
+                  f"Page: {page}. Games on page: {games_count}\n")
 
         sleep(0.2)
 
@@ -101,7 +99,3 @@ if __name__ == "__main__":
         database.rollback_to_savepoint(savepoint_name)
     finally:
         database.disconnect()
-
-
-
-

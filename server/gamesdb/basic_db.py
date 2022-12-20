@@ -30,24 +30,10 @@ class BasicDataBase:
         self._connect()
         self._create_tables()
 
-    def _create_tables(self):
-        for table_name, columns in DB_TABLES.items():
-            columns_sql = ", ".join(columns)
-            sql = f"CREATE TABLE IF NOT EXISTS {table_name} ({columns_sql})"
-            self._cursor.execute(sql)
-
     def delete_tables(self):
         for table_name in DB_TABLES.keys():
             sql = f"DROP TABLE {table_name}"
             self._cursor.execute(sql)
-
-    def _connect(self):
-        try:
-            self._connection = connect(self._path)
-            logger.info(f"{DB_NAME} connected")
-            self._cursor = self._connection.cursor()
-        except Exception as er:
-            logger.error(f"unable to connect to {self._path}. {er}")
 
     def set_savepoint(self, name):
         self._connection.execute(f"savepoint {name}")
@@ -62,3 +48,17 @@ class BasicDataBase:
         self._cursor.close()
         self._connection.close()
         logger.debug(f"{DB_NAME} disconnected")
+
+    def _connect(self):
+        try:
+            self._connection = connect(self._path)
+            logger.debug(f"{DB_NAME} connected")
+            self._cursor = self._connection.cursor()
+        except Exception as er:
+            logger.error(f"unable to connect to {self._path}. {er}")
+
+    def _create_tables(self):
+        for table_name, columns in DB_TABLES.items():
+            columns_sql = ", ".join(columns)
+            sql = f"CREATE TABLE IF NOT EXISTS {table_name} ({columns_sql})"
+            self._cursor.execute(sql)

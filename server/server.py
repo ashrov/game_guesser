@@ -44,18 +44,18 @@ class ClientThread:
         self.address = user.address
         self.guesser = Guesser()
 
-        self.listen_client()
+        self._listen_client()
 
     def _close(self):
         self.guesser.close()
 
-    def listen_client(self):
+    def _listen_client(self):
         logger.info(f"listening connection with {self.address}")
 
         try:
             while data := self.connection.recv(4096):
                 message = data.decode('utf-8')
-                response = self.handle_message(message)
+                response = self._handle_message(message)
                 self.connection.send(response.encode('utf-8'))
         except ConnectionResetError:
             logger.info(f"Connection reset by client {self.address}")
@@ -66,16 +66,16 @@ class ClientThread:
         logger.info(f"connection with {self.address} closed.")
 
     @func_time
-    def handle_message(self, mes: str) -> str:
+    def _handle_message(self, mes: str) -> str:
         """ :return: server answer (json dump string) """
         json_message = json.loads(mes)
         logger.debug(f"handling request {json_message}")
 
         match json_message.get(INTENT):
             case "answer":
-                response = self.handle_question_answer(json_message.get(ANSWER))
+                response = self._handle_question_answer(json_message.get(ANSWER))
             case "start":
-                response = self.start()
+                response = self._start()
             case "get_current_games":
                 response = {CURRENT_GAMES: self.user.current_games}
             case "get_same_games":
@@ -87,17 +87,17 @@ class ClientThread:
         logger.debug(f"returning response {response_str}")
         return response_str
 
-    def start(self):
+    def _start(self):
         self.user.reset_tags()
         self.user.current_games = self.guesser.db.all_games
-        return {NEW_TAG: self.get_next_tag()}
+        return {NEW_TAG: self._get_next_tag()}
 
-    def get_next_tag(self) -> Tag:
+    def _get_next_tag(self) -> Tag:
         new_tag = self.guesser.get_new_tag(self.user)
         self.user.current_tag = new_tag
         return new_tag
 
-    def handle_question_answer(self, result: str) -> dict:
+    def _handle_question_answer(self, result: str) -> dict:
         match result:
             case "yes":
                 self.user.add_good_tag(self.user.current_tag)
@@ -110,31 +110,30 @@ class ClientThread:
 
         if self.user.current_games:
             self.user.current_games = self.guesser.guess_game(self.user)
-        data = {NEW_TAG: self.get_next_tag(),
+        data = {NEW_TAG: self._get_next_tag(),
                 GAMES_COUNT: len(self.user.current_games)}
         return data
 
 
 class MainServer:
-    _clients: dict[User]
-    _clint_threads: list[Thread]
-
     def __init__(self):
-        self._clint_threads = []
         self.server = socket.socket()
+
         addr = ("0.0.0.0", SERVER_PORT)
         logger.info(f"starting server at {addr}")
         self.server.bind(addr)
-        logger.info("listening")
-        self.handle_connections()
 
-    def handle_connections(self):
+        logger.info("listening")
+        self._handle_connections()
+
+    def _handle_connections(self):
         while True:
             self.server.listen(10)
             conn, addr = self.server.accept()
             user = User(conn, addr)
 
             client_thread = Thread(target=ClientThread, args=(user, ))
+            logger.debug(f"starting thread for new client {addr}")
             client_thread.start()
 
 
