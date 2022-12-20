@@ -10,7 +10,7 @@ CONSOLE_HELP_MESSAGE = "start - начать угадывать\n" \
                        "get_same_games - получить не полностью подходящие игры (нужно, если нет полностью подходящих)\n"
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 socket_buffer_size = 1024
 
 

@@ -44,42 +44,8 @@ class Tag:
         return dumps(self.get_all_data())
 
 
-class TagsList:
-    def __init__(self, tags_list: Iterable[Tag] = []):
-        self._list = list(tags_list)
-        self._names_list = [tag.name for tag in self._list]
-
-    @property
-    def names_list(self):
-        return self._names_list
-
-    def from_names_list(self, names_list: Iterable[str] = []):
-        self._names_list = list(names_list)
-        self._list = [Tag(name=name) for name in names_list]
-        return self
-
-    def __str__(self):
-        return str(self._names_list)
-
-    def __iter__(self):
-        self.i = 0
-        return self
-
-    def __next__(self):
-        if self.i < len(self._list):
-            tag = self._list[self.i]
-            self.i += 1
-            return tag
-        else:
-            raise StopIteration
-
-    def append(self, new_tag: Tag):
-        self._list.append(new_tag)
-        self._names_list.append(new_tag.name)
-
-
 class Game:
-    def __init__(self, name="", game_id=-1, tags=[], steam_url="", reviews_count=0):
+    def __init__(self, name="", game_id=-1, tags=None, steam_url="", reviews_count=0):
         self.id = game_id
         self.name = name
         self.tags = tags
@@ -128,9 +94,10 @@ class User:
         self.good_tags: list[Tag] = []
         self.bad_tags: list[Tag] = []
         self.used_tags: list[Tag] = []
+        self.current_games: list[Game] = []
+
         self.connection = connection
         self.address = address
-        self.current_games = list()
         self.current_tag = None
 
     def reset_tags(self):

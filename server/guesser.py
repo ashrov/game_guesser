@@ -1,13 +1,11 @@
-from gamesdb import DataBase
-from gamesdb import Game, Tag, User
-
+from gamesdb import GuesserDataBase, Game, Tag, User
 
 import random
 
 
 class Guesser:
     def __init__(self):
-        self.db = DataBase()
+        self.db = GuesserDataBase()
 
     def close(self):
         self.db.disconnect()
@@ -48,8 +46,17 @@ class Guesser:
         return ans
 
     def get_new_tag(self, user: User) -> Tag:
-        remaining_tags = self.db.get_possible_tags(user)
-        remaining_tags.sort()
+        remaining_tags = tuple(self._get_possible_tags(user))
 
         weights = [tag.usage_count for tag in remaining_tags]
         return random.choices(remaining_tags, weights=weights)[0]
+
+    def _get_possible_tags(self, user: User, games_threshold=100) -> set[Tag]:
+        if not (1 < len(user.current_games) <= games_threshold):
+            return self.db.all_tags - set(user.used_tags)
+
+        possible_tags = set()
+        for game in user.current_games:
+            possible_tags |= self.db.get_game_tags(game.id)
+
+        return possible_tags - set(user.used_tags)
