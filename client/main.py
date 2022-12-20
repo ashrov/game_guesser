@@ -63,8 +63,13 @@ class Win2(QtWidgets.QMainWindow):
 
     def handle_answer(self, answer):
         response = self.client.answer(answer)
-        self.ui.label_2.setText(response["new_tag"]["question"])
-        self.ui.label_4.setText(f"Games count: {response['games_count']}")
+        if response['games_count'] == 1:
+            self.one_game_left_warning_messagebox()
+        elif response['games_count'] == 0:
+            self.zero_games_left_warning_messagebox()
+        else:
+            self.ui.label_2.setText(response["new_tag"]["question"])
+            self.ui.label_4.setText(f"Games count: {response['games_count']}")
 
     def get_games(self):
         self.hide()
@@ -75,6 +80,31 @@ class Win2(QtWidgets.QMainWindow):
         self.ui.label_2.setText(self.response["new_tag"]["question"])
         self.ui.label_4.setText("Games count: ...")
 
+    def one_game_left_warning_messagebox(self):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Warning)
+
+        msg.setText("Games left: 1\nDo You want to get this?")
+        msg.setWindowTitle("Warning MessageBox")
+
+        msg.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        button = msg.exec()
+        if button == QtWidgets.QMessageBox.Yes:
+            self.get_games()
+        else:
+            self.restart()
+
+    def zero_games_left_warning_messagebox(self):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Warning)
+
+        msg.setText("Games left: 0\nDo You want to restart?")
+        msg.setWindowTitle("Warning MessageBox")
+
+        msg.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        button = msg.exec()
+        if button == QtWidgets.QMessageBox.Yes:
+            self.restart()
 
 class Win1(QtWidgets.QMainWindow):
     def __init__(self):
