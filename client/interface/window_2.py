@@ -20,7 +20,7 @@ class UiWindow2(object):
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(0, 0, 900, 600))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("images/sppr_win_main_without_text.png"))
+        self.label.setPixmap(QtGui.QPixmap("interface/images/sppr_win_main_without_text.png"))
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
