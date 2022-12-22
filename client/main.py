@@ -20,11 +20,14 @@ class Win3(QtWidgets.QMainWindow):
         self.client = client
         self.parent_window = parent_window
 
-    def fill_games_list(self):
+    def fill_games_list(self, games_type):
         self.ui.listWidget.clear()
 
-        response = self.client.get_current_games()
-        for game in response.get("current_games"):
+        if games_type == "current_games":
+            response = self.client.get_current_games()
+        else:
+            response = self.client.get_same_games()
+        for game in response.get(games_type):
             item = QtWidgets.QListWidgetItem()
             item.setText(game.get("game_name"))
             item.setData(1, game.get("steam_url"))
@@ -32,7 +35,13 @@ class Win3(QtWidgets.QMainWindow):
             self.ui.listWidget.addItem(item)
 
     def show(self) -> None:
-        self.fill_games_list()
+        games_type = "current_games"
+        self.fill_games_list(games_type)
+        super().show()
+
+    def show_same_games(self) -> None:
+        games_type = "same_games"
+        self.fill_games_list(games_type)
         super().show()
 
     def handle_clicked_item(self, item: QtWidgets.QListWidgetItem):
@@ -57,6 +66,7 @@ class Win2(QtWidgets.QMainWindow):
         self.ui.pushButton_4.clicked.connect(lambda: self.handle_answer("dn"))
         self.ui.pushButton_3.clicked.connect(self.get_games)
         self.ui.pushButton_5.clicked.connect(self.restart)
+        self.ui.pushButton_6.clicked.connect(self.get_same_games)
 
         self.response = self.client.start_guessing()
         self.ui.label_2.setText(self.response["new_tag"]["question"])
@@ -74,6 +84,10 @@ class Win2(QtWidgets.QMainWindow):
     def get_games(self):
         self.hide()
         self.win_3.show()
+
+    def get_same_games(self):
+        self.hide()
+        self.win_3.show_same_games()
 
     def restart(self):
         self.response = self.client.start_guessing()

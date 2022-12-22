@@ -29,7 +29,7 @@ class UiWindow2(object):
 "    text-align: center;\n"
 "    background-color: white;\n"
 "    border-radius: 20px;\n"
-"    font: 14pt \"Times New Roman\";\n"
+"    font: 14pt \"Comic Sans MS\";\n"
 "    font-weight: bold;\n"
 "}")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
@@ -66,6 +66,18 @@ class UiWindow2(object):
 "    border-radius: 10px;\n"
 "}")
         self.pushButton_3.setObjectName("pushButton_3")
+
+        self.pushButton_6 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_6.setGeometry(QtCore.QRect(760, 110, 130, 40))
+        self.pushButton_6.setStyleSheet("QPushButton{\n"
+                                        "    \n"
+                                        "    \n"
+                                        "    font: 14pt \"Terminal\";\n"
+                                        "    background-color: white;\n"
+                                        "    border-radius: 10px;\n"
+                                        "}")
+        self.pushButton_6.setObjectName("pushButton_3")
+
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
         self.label_3.setGeometry(QtCore.QRect(-10, -40, 281, 321))
         self.label_3.setText("")
@@ -82,6 +94,7 @@ class UiWindow2(object):
 "    border-radius: 10px;\n"
 "}")
         self.pushButton_4.setObjectName("pushButton_4")
+
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
         self.label_4.setGeometry(QtCore.QRect(630, 10, 261, 41))
         self.label_4.setStyleSheet("QLabel{\n"
@@ -93,7 +106,7 @@ class UiWindow2(object):
         self.label_4.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.label_4.setObjectName("label_4")
         self.pushButton_5 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_5.setGeometry(QtCore.QRect(760, 110, 130, 40))
+        self.pushButton_5.setGeometry(QtCore.QRect(760, 160, 130, 40))
         self.pushButton_5.setStyleSheet("QPushButton{\n"
 "    \n"
 "    \n"
@@ -117,6 +130,7 @@ class UiWindow2(object):
         self.pushButton_4.setText(_translate("MainWindow", "Don\'t know"))
         self.label_4.setText(_translate("MainWindow", "Games count: ..."))
         self.pushButton_5.setText(_translate("MainWindow", "Restart"))
+        self.pushButton_6.setText(_translate("MainWindow", "Get same\n games"))
 
 
 if __name__ == "__main__":
